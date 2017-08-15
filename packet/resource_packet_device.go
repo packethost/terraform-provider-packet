@@ -112,6 +112,12 @@ func resourcePacketDevice() *schema.Resource {
 				Optional: true,
 			},
 
+			"public_ipv4_subnet_size": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				ForceNew: true,
+			},
+
 			"tags": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -125,12 +131,13 @@ func resourcePacketDeviceCreate(d *schema.ResourceData, meta interface{}) error 
 	client := meta.(*packngo.Client)
 
 	createRequest := &packngo.DeviceCreateRequest{
-		HostName:     d.Get("hostname").(string),
-		Plan:         d.Get("plan").(string),
-		Facility:     d.Get("facility").(string),
-		OS:           d.Get("operating_system").(string),
-		BillingCycle: d.Get("billing_cycle").(string),
-		ProjectID:    d.Get("project_id").(string),
+		HostName:             d.Get("hostname").(string),
+		Plan:                 d.Get("plan").(string),
+		Facility:             d.Get("facility").(string),
+		OS:                   d.Get("operating_system").(string),
+		BillingCycle:         d.Get("billing_cycle").(string),
+		ProjectID:            d.Get("project_id").(string),
+		PublicIPv4SubnetSize: d.Get("public_ipv4_subnet_size").(int),
 	}
 
 	if attr, ok := d.GetOk("user_data"); ok {
