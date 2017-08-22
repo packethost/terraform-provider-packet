@@ -114,6 +114,7 @@ func resourcePacketDevice() *schema.Resource {
 
 			"public_ipv4_subnet_size": &schema.Schema{
 				Type:     schema.TypeInt,
+				Computed: true,
 				Optional: true,
 				ForceNew: true,
 			},
@@ -208,8 +209,9 @@ func resourcePacketDeviceRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("tags", tags)
 
 	var (
-		host     string
-		networks = make([]map[string]interface{}, 0, 1)
+		ipv4SubnetSize int
+		host           string
+		networks       = make([]map[string]interface{}, 0, 1)
 	)
 	for _, ip := range device.Network {
 		network := map[string]interface{}{
@@ -223,9 +225,11 @@ func resourcePacketDeviceRead(d *schema.ResourceData, meta interface{}) error {
 
 		if ip.AddressFamily == 4 && ip.Public == true {
 			host = ip.Address
+			ipv4SubnetSize = ip.Cidr
 		}
 	}
 	d.Set("network", networks)
+	d.Set("public_ipv4_subnet_size", ipv4SubnetSize)
 
 	if host != "" {
 		d.SetConnInfo(map[string]string{

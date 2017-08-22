@@ -13,6 +13,7 @@ import (
 func TestAccPacketDevice_Basic(t *testing.T) {
 	var device packngo.Device
 	rs := acctest.RandString(10)
+	r := "packet_device.test"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -22,9 +23,10 @@ func TestAccPacketDevice_Basic(t *testing.T) {
 			resource.TestStep{
 				Config: fmt.Sprintf(testAccCheckPacketDeviceConfig_basic, rs),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckPacketDeviceExists("packet_device.terraform_test_device", &device),
+					testAccCheckPacketDeviceExists(r, &device),
 					testAccCheckPacketDeviceAttributes(&device),
-					testAccCheckPacketDevicePublicIPv4Cidr(&device, 31),
+					resource.TestCheckResourceAttr(
+						r, "public_ipv4_subnet_size", "31"),
 				),
 			},
 		},
@@ -34,6 +36,7 @@ func TestAccPacketDevice_Basic(t *testing.T) {
 func TestAccPacketDevice_RequestSubnet(t *testing.T) {
 	var device packngo.Device
 	rs := acctest.RandString(10)
+	r := "packet_device.test_subnet_29"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -43,8 +46,9 @@ func TestAccPacketDevice_RequestSubnet(t *testing.T) {
 			resource.TestStep{
 				Config: fmt.Sprintf(testAccCheckPacketDeviceConfig_request_subnet, rs),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckPacketDeviceExists("packet_device.terraform_test_device_subnet_29", &device),
-					testAccCheckPacketDevicePublicIPv4Cidr(&device, 29),
+					testAccCheckPacketDeviceExists(r, &device),
+					resource.TestCheckResourceAttr(
+						r, "public_ipv4_subnet_size", "29"),
 				),
 			},
 		},
@@ -65,31 +69,9 @@ func testAccCheckPacketDeviceDestroy(s *terraform.State) error {
 	return nil
 }
 
-func getPublicIPv4Cidr(device *packngo.Device) (int, error) {
-	for _, ipa := range device.Network {
-		if ipa.AddressFamily == 4 && ipa.Public {
-			return ipa.Cidr, nil
-		}
-	}
-	return 0, fmt.Errorf("device %s does not have a public IPv4", device.ID)
-}
-
-func testAccCheckPacketDevicePublicIPv4Cidr(device *packngo.Device, cidr int) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		devCidr, err := getPublicIPv4Cidr(device)
-		if err != nil {
-			return err
-		}
-		if devCidr != cidr {
-			return fmt.Errorf("The CIDR prefix of device %s is %d, but is %d instead", device.ID, devCidr, cidr)
-		}
-		return nil
-	}
-}
-
 func testAccCheckPacketDeviceAttributes(device *packngo.Device) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		if device.Hostname != "terraform-test-device" {
+		if device.Hostname != "test-device" {
 			return fmt.Errorf("Bad name: %s", device.Hostname)
 		}
 		if device.State != "active" {
@@ -127,30 +109,30 @@ func testAccCheckPacketDeviceExists(n string, device *packngo.Device) resource.T
 }
 
 var testAccCheckPacketDeviceConfig_basic = `
-resource "packet_project" "terraform_test_project" {
+resource "packet_project" "test" {
     name = "TerraformTestProject-%s"
 }
 
-resource "packet_device" "terraform_test_device" {
-  hostname         = "terraform-test-device"
+resource "packet_device" "test" {
+  hostname         = "test-device"
   plan             = "baremetal_0"
   facility         = "sjc1"
   operating_system = "ubuntu_16_04"
   billing_cycle    = "hourly"
-  project_id       = "${packet_project.terraform_test_project.id}"
+  project_id       = "${packet_project.test.id}"
 }`
 
 var testAccCheckPacketDeviceConfig_request_subnet = `
-resource "packet_project" "terraform_test_project" {
+resource "packet_project" "test" {
     name = "TerraformTestProject-%s"
 }
 
-resource "packet_device" "terraform_test_device_subnet_29" {
-  hostname         = "terraform-test-device-subnet-29"
+resource "packet_device" "test_subnet_29" {
+  hostname         = "test-subnet-29"
   plan             = "baremetal_0"
   facility         = "sjc1"
   operating_system = "ubuntu_16_04"
   billing_cycle    = "hourly"
-  project_id       = "${packet_project.terraform_test_project.id}"
+  project_id       = "${packet_project.test.id}"
   public_ipv4_subnet_size = 29
 }`
