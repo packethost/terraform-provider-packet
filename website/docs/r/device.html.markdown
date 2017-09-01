@@ -59,6 +59,16 @@ The following arguments are supported:
 * `public_ipv4_subnet_size` (Optional) - Size of allocated subnet, more
   information is in the
   [Custom Subnet Size](https://help.packet.net/technical/networking/custom-subnet-size) doc.
+* `spot_instance` (Optional) - If true, create a preemptible device using
+  `spot_price_max` as a bid. See the
+  [documentation](https://help.packet.net/technical/deployment-options/spot-market)
+  for more details
+* `spot_price_max` (Optional) - Spot market bid price. Must be set when
+  `spot_instance` is true.
+* `termination_time` (Optional) - Set this to automatically terminate the device
+  at a certain time. Accepts RFC3339 (e.g. `2018-09-21T19:20:01-05:00`) or
+  Duration (e.g. `6h20m`) formats. Should only be provided if `spot_instance` is
+  true.
 * `ipxe_script_url` (Optional) - URL pointing to a hosted iPXE script. More
   information is in the
   [Custom iPXE](https://help.packet.net/technical/infrastructure/custom-ipxe)
@@ -83,6 +93,17 @@ The following attributes are exported:
 * `locked` - Whether the device is locked
 * `billing_cycle` - The billing cycle of the device (monthly or hourly)
 * `operating_system` - The operating system running on the device
+* `spot_instance` - True if this device is a preemptible spot instance
+* `spot_price_max` - User-provided bid price if device is a `spot_instance`
+* `termination_time` - User-provided date or duration for terminating a
+  `spot_instance`
+* `termination_timestamp` - Convenience attributes that stores the RFC3339
+  formatted date of the device. Useful if `termination_time` is set as a
+  duration instead of a date.
+* `termination_time_remaining` - Convenience attribute that stores the time
+  remaining before `termination_timestamp` in duration format.
+* `ipxe_script_url` - User-provided iPXE script URL
+* `always_pxe` - True if device will always reboot with iPXE boot
 * `state` - The status of the device
 * `created` - The timestamp for when the device was created
 * `updated` - The timestamp for the last time the device was updated

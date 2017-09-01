@@ -5,6 +5,7 @@ import (
 	"net"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
@@ -12,9 +13,13 @@ import (
 	"github.com/packethost/packngo"
 )
 
-// Regexp vars for use with resource.ExpectError
+// Regexp vars for use with resource.ExpectError, resource.TestMatchResourceAttr, etc.
 var matchErrConflictsWith = regexp.MustCompile(".* conflicts with .*")
 var matchErrMustBeProvided = regexp.MustCompile(".* must be provided when .*")
+var matchErrShouldOnlyBeProvided = regexp.MustCompile(".* should only be provided when .*")
+var matchErrOutOfRange = regexp.MustCompile(".* is out of range .*")
+var matchErrIsNotValid = regexp.MustCompile(".* is not a valid value for.*")
+var matchAttrDuration = regexp.MustCompile(`^\dh\d{1,2}m\d{1,2}s$`)
 
 func TestAccPacketDevice_Basic(t *testing.T) {
 	var device packngo.Device
@@ -40,6 +45,12 @@ func TestAccPacketDevice_Basic(t *testing.T) {
 						r, "always_pxe", "false"),
 					resource.TestCheckResourceAttrSet(
 						r, "root_password"),
+					resource.TestCheckResourceAttr(
+						r, "spot_instance", "false"),
+					resource.TestCheckResourceAttr(
+						r, "spot_price_max", ""),
+					resource.TestCheckResourceAttr(
+						r, "termination_time", ""),
 				),
 			},
 		},
@@ -149,10 +160,170 @@ func TestAccPacketDevice_IPXEConfigMissing(t *testing.T) {
 			resource.TestStep{
 				Config: fmt.Sprintf(testAccCheckPacketDeviceConfig_ipxe_missing, rs),
 				Check: resource.ComposeTestCheckFunc(
-					// resource.TestCheckNoResourceAttr("r", "user_data"),
-					// resource.TestCheckNoResourceAttr("r", "ipxe_script_url"),
 					testAccCheckPacketDeviceExists(r, &device),
 				),
+				ExpectError: matchErrMustBeProvided,
+			},
+		},
+	})
+}
+
+func TestAccPacketDevice_SpotInstance(t *testing.T) {
+	var device packngo.Device
+	rs := acctest.RandString(10)
+	r := "packet_device.test_spot_instance"
+	si := "true"
+	spm := "0.01"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPacketDeviceDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: fmt.Sprintf(testAccCheckPacketDeviceConfig_spot_instance,
+					rs, si, spm, ""),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckPacketDeviceExists(r, &device),
+					testAccCheckPacketDeviceNetwork(r),
+					resource.TestCheckResourceAttr(
+						r, "spot_instance", si),
+					resource.TestCheckResourceAttr(
+						r, "spot_price_max", spm),
+				),
+			},
+		},
+	})
+}
+
+func TestAccPacketDevice_SpotTermRFC3339(t *testing.T) {
+	var device packngo.Device
+	rs := acctest.RandString(10)
+	r := "packet_device.test_spot_instance"
+	si := "true"
+	spm := "0.01"
+	ttd := time.Duration(time.Hour * 6).Round(terminationTimeRoundVal)
+	tn := time.Now()
+	tt := tn.Add(ttd).Round(terminationTimeRoundVal)
+	ttRFC := tt.Format(time.RFC3339)
+
+	// Test termination_time with RFC3339 format
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPacketDeviceDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: fmt.Sprintf(testAccCheckPacketDeviceConfig_spot_instance,
+					rs, si, spm, ttRFC),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckPacketDeviceExists(r, &device),
+					testAccCheckPacketDeviceNetwork(r),
+					resource.TestCheckResourceAttr(
+						r, "spot_instance", si),
+					resource.TestCheckResourceAttr(
+						r, "spot_price_max", spm),
+					resource.TestCheckResourceAttr(
+						r, "termination_time", ttRFC),
+					resource.TestCheckResourceAttr(
+						r, "termination_timestamp", ttRFC),
+					resource.TestMatchResourceAttr(
+						r, "termination_time_remaining",
+						matchAttrDuration),
+				),
+			},
+		},
+	})
+}
+
+func TestAccPacketDevice_SpotTermDuration(t *testing.T) {
+	var device packngo.Device
+	rs := acctest.RandString(10)
+	r := "packet_device.test_spot_instance"
+	si := "true"
+	spm := "0.01"
+	ttd := time.Duration(time.Hour * 6).Round(terminationTimeRoundVal)
+	tn := time.Now()
+	tt := tn.Add(ttd).Round(terminationTimeRoundVal)
+	ttRFC := tt.Format(time.RFC3339)
+
+	// Test termination_time with Duration format
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPacketDeviceDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: fmt.Sprintf(testAccCheckPacketDeviceConfig_spot_instance,
+					rs, si, spm, ttd),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckPacketDeviceExists(r, &device),
+					testAccCheckPacketDeviceNetwork(r),
+					resource.TestCheckResourceAttr(
+						r, "spot_instance", si),
+					resource.TestCheckResourceAttr(
+						r, "spot_price_max", spm),
+					resource.TestCheckResourceAttr(
+						r, "termination_time", ttd.String()),
+					resource.TestCheckResourceAttr(
+						r, "termination_timestamp", ttRFC),
+					resource.TestMatchResourceAttr(
+						r, "termination_time_remaining",
+						matchAttrDuration),
+				),
+			},
+		},
+	})
+}
+
+func TestAccPacketDevice_SpotInstanceInvalid(t *testing.T) {
+	rs := acctest.RandString(10)
+	si := "true"
+	ttd := time.Duration(time.Hour * 6)
+	tt := time.Now().Add(ttd)
+	ttRFC := tt.Format(time.RFC3339)
+	spm := "0.01"
+
+	// Invalid termination_time test: Wrong format
+	badTime := tt.Format(time.Stamp)
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPacketDeviceDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: fmt.Sprintf(testAccCheckPacketDeviceConfig_spot_instance,
+					rs, si, spm, badTime),
+				ExpectError: matchErrIsNotValid,
+			},
+		},
+	})
+
+	// spot_instance false, but other spot fields set
+	si = "false"
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPacketDeviceDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: fmt.Sprintf(testAccCheckPacketDeviceConfig_spot_instance,
+					rs, si, spm, ttRFC),
+				ExpectError: matchErrShouldOnlyBeProvided,
+			},
+		},
+	})
+	si = "true" // Reset
+
+	// Missing spot_price_max
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPacketDeviceDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: fmt.Sprintf(testAccCheckPacketDeviceConfig_spot_price_missing,
+					rs, si, ttRFC),
 				ExpectError: matchErrMustBeProvided,
 			},
 		},
@@ -339,4 +510,37 @@ resource "packet_device" "test_ipxe_missing" {
   billing_cycle    = "hourly"
   project_id       = "${packet_project.test.id}"
   always_pxe       = true
+}`
+
+var testAccCheckPacketDeviceConfig_spot_instance = `
+resource "packet_project" "test" {
+  name = "TerraformTestProject-%s"
+}
+
+resource "packet_device" "test_spot_instance" {
+  hostname         = "test-spot-instance"
+  plan             = "baremetal_0"
+  facility         = "nrt1"
+  operating_system = "coreos_stable"
+  billing_cycle    = "hourly"
+  project_id       = "${packet_project.test.id}"
+  spot_instance    = %s
+  spot_price_max   = %s
+  termination_time = "%s"
+}`
+
+var testAccCheckPacketDeviceConfig_spot_price_missing = `
+resource "packet_project" "test" {
+  name = "TerraformTestProject-%s"
+}
+
+resource "packet_device" "test_spot_instance" {
+  hostname         = "test-spot-instance"
+  plan             = "baremetal_0"
+  facility         = "nrt1"
+  operating_system = "coreos_stable"
+  billing_cycle    = "hourly"
+  project_id       = "${packet_project.test.id}"
+  spot_instance    = %s
+  termination_time = "%s"
 }`
