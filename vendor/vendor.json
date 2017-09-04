@@ -15,6 +15,12 @@
 			"revisionTime": "2016-08-26T14:30:32Z"
 		},
 		{
+			"checksumSHA1": "GCTVJ1J/SGZstNZauuLAnTFOhGA=",
+			"path": "github.com/armon/go-radix",
+			"revision": "1fca145dffbcaa8fe914309b1ec0cfc67500fe61",
+			"revisionTime": "2017-07-27T15:54:43Z"
+		},
+		{
 			"checksumSHA1": "fFU9OeM0pKWGL3D+Fa3PmHSjjLg=",
 			"path": "github.com/aws/aws-sdk-go/aws",
 			"revision": "be4fa13e47938e4801fada8c8ca3d1867ad3dcb3",
@@ -221,6 +227,12 @@
 			"revisionTime": "2014-04-22T17:41:19Z"
 		},
 		{
+			"checksumSHA1": "oTmBS67uxM6OXB/+OJUAG9LK4jw=",
+			"path": "github.com/bgentry/speakeasy",
+			"revision": "4aabc24848ce5fd31929f7d1e4ea74d3709c14cd",
+			"revisionTime": "2017-04-17T20:07:03Z"
+		},
+		{
 			"checksumSHA1": "OT4XN9z5k69e2RsMSpwW74B+yk4=",
 			"path": "github.com/blang/semver",
 			"revision": "2ee87856327ba09384cabd113bc6b5d174e9ec0f",
@@ -268,6 +280,12 @@
 			"path": "github.com/hashicorp/go-getter/helper/url",
 			"revision": "c3d66e76678dce180a7b452653472f949aedfbcd",
 			"revisionTime": "2017-02-07T21:55:32Z"
+		},
+		{
+			"checksumSHA1": "0OUXdKhaE6TzpHevY0VFlAA5YJ8=",
+			"path": "github.com/hashicorp/go-hclog",
+			"revision": "8105cc0a3736cc153a2025f5d0d91b80045fc9ff",
+			"revisionTime": "2017-09-03T16:32:58Z"
 		},
 		{
 			"checksumSHA1": "lrSl49G23l6NhfilxPM0XFs5rZo=",
@@ -376,138 +394,140 @@
 			"revisionTime": "2015-06-09T07:04:31Z"
 		},
 		{
-			"checksumSHA1": "KPrCMDPNcLmO7K6xPcJSl86LwPk=",
+			"checksumSHA1": "LqpjXPyY26LEMgy13xbqpOjDTtM=",
 			"path": "github.com/hashicorp/terraform/config",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
 			"checksumSHA1": "uPCJ6seQo9kvoNSfwNWKX9KzVMk=",
 			"path": "github.com/hashicorp/terraform/config/module",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
-			"checksumSHA1": "w+l+UGTmwYNJ+L0p2vTd6+yqjok=",
+			"checksumSHA1": "rtdn0kfStvx3sSff3WiuMexo9RM=",
 			"path": "github.com/hashicorp/terraform/dag",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
 			"checksumSHA1": "P8gNPDuOzmiK4Lz9xG7OBy4Rlm8=",
 			"path": "github.com/hashicorp/terraform/flatmap",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
 			"checksumSHA1": "zx5DLo5aV0xDqxGTzSibXg7HHAA=",
 			"path": "github.com/hashicorp/terraform/helper/acctest",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
 			"checksumSHA1": "uT6Q9RdSRAkDjyUgQlJ2XKJRab4=",
 			"path": "github.com/hashicorp/terraform/helper/config",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
 			"checksumSHA1": "Vbo55GDzPgG/L/+W2pcvDhxrPZc=",
 			"path": "github.com/hashicorp/terraform/helper/experiment",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
 			"checksumSHA1": "BmIPKTr0zDutSJdyq7pYXrK1I3E=",
 			"path": "github.com/hashicorp/terraform/helper/hashcode",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
 			"checksumSHA1": "B267stWNQd0/pBTXHfI/tJsxzfc=",
 			"path": "github.com/hashicorp/terraform/helper/hilmapstructure",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
 			"checksumSHA1": "2wJa9F3BGlbe2DNqH5lb5POayRI=",
 			"path": "github.com/hashicorp/terraform/helper/logging",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
-			"checksumSHA1": "dhU2woQaSEI2OnbYLdkHxf7/nu8=",
+			"checksumSHA1": "ur/QmPC7WlcUwZzXxbNVyY0cIak=",
 			"path": "github.com/hashicorp/terraform/helper/resource",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
-			"checksumSHA1": "0smlb90amL15c/6nWtW4DV6Lqh8=",
+			"checksumSHA1": "pCGhHS9BP0onot7vLaHIRDs31Bc=",
 			"path": "github.com/hashicorp/terraform/helper/schema",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
 			"checksumSHA1": "1yCGh/Wl4H4ODBBRmIRFcV025b0=",
 			"path": "github.com/hashicorp/terraform/helper/shadow",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
 			"checksumSHA1": "yFWmdS6yEJZpRJzUqd/mULqCYGk=",
 			"path": "github.com/hashicorp/terraform/moduledeps",
-			"revision": "5bcc1bae5925f44208a83279b6d4d250da01597b",
-			"revisionTime": "2017-08-09T21:54:59Z"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
-			"checksumSHA1": "4ODNVUds3lyBf7gV02X1EeYR4GA=",
+			"checksumSHA1": "UP4cxEFYzncmyG/irQ4CP9HrTic=",
 			"path": "github.com/hashicorp/terraform/plugin",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
-			"checksumSHA1": "mujz3BDg1X82ynvJncCFUT6/7XI=",
+			"checksumSHA1": "EHHrYLqEpTXzJMmZYMMFTGWDbaE=",
 			"path": "github.com/hashicorp/terraform/plugin/discovery",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
-			"checksumSHA1": "ksfNQjZs/6llziARojABd6iuvdw=",
+			"checksumSHA1": "GwCgVL6xJgEb2c7KJwv+cbP2S8s=",
 			"path": "github.com/hashicorp/terraform/terraform",
-			"revision": "2041053ee9444fa8175a298093b55a89586a1823",
-			"revisionTime": "2017-08-02T18:39:14Z",
-			"version": "v0.10.0",
-			"versionExact": "v0.10.0"
+			"revision": "1511d447e78d8106787875265f96d3a3a03005d5",
+			"revisionTime": "2017-08-30T21:41:28Z",
+			"version": "v0.10.3",
+			"versionExact": "v0.10.3"
 		},
 		{
 			"checksumSHA1": "ZhK6IO2XN81Y+3RAjTcVm1Ic7oU=",
@@ -521,6 +541,18 @@
 			"path": "github.com/jmespath/go-jmespath",
 			"revision": "bd40a432e4c76585ef6b72d3fd96fb9b6dc7b68d",
 			"revisionTime": "2016-08-03T19:07:31Z"
+		},
+		{
+			"checksumSHA1": "trzmsZQDCc13zk/6qANox7Z/KCg=",
+			"path": "github.com/mattn/go-isatty",
+			"revision": "fc9e8d8ef48496124e79ae0df75490096eccf6fe",
+			"revisionTime": "2017-03-22T23:44:13Z"
+		},
+		{
+			"checksumSHA1": "gPuHq0UytpuYPb2YWmFVb22Twcc=",
+			"path": "github.com/mitchellh/cli",
+			"revision": "0ce7cd515f64496ee660ab19f6bbf373945d3af0",
+			"revisionTime": "2017-08-24T19:02:09Z"
 		},
 		{
 			"checksumSHA1": "guxbLo8KHHBeM0rzou4OTzzpDNs=",
@@ -556,6 +588,30 @@
 			"path": "github.com/packethost/packngo",
 			"revision": "36f34102fc1464824b8069cbd65ad5a0185d2dc7",
 			"revisionTime": "2017-09-01T15:06:29Z"
+		},
+		{
+			"checksumSHA1": "rTNABfFJ9wtLQRH8uYNkEZGQOrY=",
+			"path": "github.com/posener/complete",
+			"revision": "9f41f7636a724791a3b8b1d35e84caa1124f0d3c",
+			"revisionTime": "2017-08-29T17:11:12Z"
+		},
+		{
+			"checksumSHA1": "NB7uVS0/BJDmNu68vPAlbrq4TME=",
+			"path": "github.com/posener/complete/cmd",
+			"revision": "9f41f7636a724791a3b8b1d35e84caa1124f0d3c",
+			"revisionTime": "2017-08-29T17:11:12Z"
+		},
+		{
+			"checksumSHA1": "gSX86Xl0w9hvtntdT8h23DZtSag=",
+			"path": "github.com/posener/complete/cmd/install",
+			"revision": "9f41f7636a724791a3b8b1d35e84caa1124f0d3c",
+			"revisionTime": "2017-08-29T17:11:12Z"
+		},
+		{
+			"checksumSHA1": "DMo94FwJAm9ZCYCiYdJU2+bh4no=",
+			"path": "github.com/posener/complete/match",
+			"revision": "9f41f7636a724791a3b8b1d35e84caa1124f0d3c",
+			"revisionTime": "2017-08-29T17:11:12Z"
 		},
 		{
 			"checksumSHA1": "u5s2PZ7fzCOqQX7bVPf9IJ+qNLQ=",
@@ -658,6 +714,12 @@
 			"path": "golang.org/x/net/html/atom",
 			"revision": "1c05540f6879653db88113bc4a2b70aec4bd491f",
 			"revisionTime": "2017-08-04T00:04:37Z"
+		},
+		{
+			"checksumSHA1": "6Yh/sh2D/OyNxKqPVs8alWUhTms=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "7ddbeae9ae08c6a06a59597f0c9edbc5ff2444ce",
+			"revisionTime": "2017-09-01T16:16:44Z"
 		},
 		{
 			"checksumSHA1": "wICWAGQfZcHD2y0dHesz9R2YSiw=",
