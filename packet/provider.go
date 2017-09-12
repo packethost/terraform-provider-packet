@@ -32,5 +32,13 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	config := Config{
 		AuthToken: d.Get("auth_token").(string),
 	}
-	return config.Client(), nil
+	c := config.Client()
+
+	// Validate auth & return early
+	_, _, err := c.Users.Get("")
+	if err != nil {
+		return nil, err
+	}
+
+	return c, nil
 }
