@@ -45,6 +45,21 @@ resource "packet_device" "pxe1" {
 }
 ```
 
+```hcl
+# Create a spot_instance with a $0.10 bid and termination time 6 hours after creation
+resource "packet_device" "web1" {
+  hostname         = "tf.coreos2"
+  plan             = "baremetal_1"
+  facility         = "ewr1"
+  operating_system = "coreos_stable"
+  billing_cycle    = "hourly"
+  project_id       = "${packet_project.cool_project.id}"
+  spot_instance    = true
+  spot_price_max   = 0.10
+  termination_time = 6h
+}
+```
+
 ## Argument Reference
 
 The following arguments are supported:
@@ -76,6 +91,8 @@ The following arguments are supported:
 * `always_pxe` (Optional) - If true, a device with OS `custom_ipxe` will
   continue to boot via iPXE on reboots.
 * `hardware_reservation_id` (Optional) - The id of hardware reservation where you want this device deployed, or `next-available` if you want to pick your next available reservation automatically.
+  you want this device deployed
+* `tags` (Optional) - List of keywords to attach to the device's metadata.
 
 ## Attributes Reference
 
