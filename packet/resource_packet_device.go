@@ -321,18 +321,26 @@ func resourcePacketDeviceCreate(d *schema.ResourceData, meta interface{}) error 
 
 func resourcePacketDeviceRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*packngo.Client)
+	var device *packngo.Device
 
-	device, _, err := client.Devices.Get(d.Id())
+	pID := d.Get("project_id")
+	devices, _, err := client.Devices.List(pID.(string))
 	if err != nil {
-		err = friendlyError(err)
+		return friendlyError(err)
+	}
 
-		// If the device somehow already destroyed, mark as succesfully gone.
-		if isNotFound(err) {
-			d.SetId("")
-			return nil
+	for _, pDevice := range devices {
+		if pDevice.ID == d.Id() {
+			device = &pDevice
+			break
 		}
+	}
 
-		return err
+	// If device isn't in the project's device list, mark as
+	// successfully gone.
+	if device == nil {
+		d.SetId("")
+		return nil
 	}
 
 	d.Set("name", device.Hostname)
@@ -574,6 +582,12 @@ func stringTimeParsibleBy(parsers *[]timeParserFunc) schema.SchemaValidateFunc {
 		v, ok := i.(string)
 		if !ok {
 			errs = append(errs, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+
+		// No value is OK. We take that to mean the optional config arg
+		// is not set.
+		if v == "" {
 			return
 		}
 
