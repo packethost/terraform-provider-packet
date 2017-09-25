@@ -409,6 +409,10 @@ func resourcePacketDeviceRead(d *schema.ResourceData, meta interface{}) error {
 		// Round to 10 second intervals
 		remaining := time.Until(device.TerminationTime.Time).Round(terminationTimeRoundVal)
 		d.Set("termination_time_remaining", remaining.String())
+	} else {
+		d.Set("termination_time", "")
+		d.Set("termination_timestamp", "")
+		d.Set("termination_time_remaining", "")
 	}
 
 	if host != "" {
