@@ -193,6 +193,15 @@ func resourcePacketDevice() *schema.Resource {
 				},
 				ValidateFunc: validation.ValidateJsonString,
 			},
+			"spot_instance": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
+			"spot_price_max": &schema.Schema{
+				Type:     schema.TypeFloat,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -262,6 +271,15 @@ func resourcePacketDeviceCreate(d *schema.ResourceData, meta interface{}) error 
 			return errwrap.Wrapf("storage param contains invalid JSON: {{err}}", err)
 		}
 		createRequest.Storage = s
+	}
+
+	if attr, ok := d.GetOk("spot_instance"); ok {
+		if priceAttr, ok := d.GetOk("spot_price_max"); ok {
+			createRequest.SpotInstance = attr.(bool)
+			createRequest.SpotPriceMax = priceAttr.(float64)
+		} else {
+			return friendlyError(errors.New("\"spot_price_max\" must be provided when \"spot_instance\" is true"))
+		}
 	}
 
 	newDevice, _, err := client.Devices.Create(createRequest)

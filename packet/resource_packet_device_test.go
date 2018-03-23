@@ -183,6 +183,45 @@ func TestAccPacketDevice_IPXEConfigMissing(t *testing.T) {
 		},
 	})
 }
+func TestAccPacketDevice_SpotInstance(t *testing.T) {
+	var device packngo.Device
+	rs := acctest.RandString(10)
+	r := "packet_device.test_spot_instance"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPacketDeviceDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: fmt.Sprintf(testAccCheckPacketDeviceConfig_spot_instance, rs),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckPacketDeviceExists(r, &device),
+				),
+			},
+		},
+	})
+}
+func TestAccPacketDevice_SpotPriceMaxMissing(t *testing.T) {
+	var device packngo.Device
+	rs := acctest.RandString(10)
+	r := "packet_device.test_spot_price_missing"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPacketDeviceDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: fmt.Sprintf(testAccCheckPacketDeviceConfig_spot_price_max_missing, rs),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckPacketDeviceExists(r, &device),
+				),
+				ExpectError: matchErrMustBeProvided,
+			},
+		},
+	})
+}
 
 func testAccCheckPacketDeviceDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*packngo.Client)
@@ -396,4 +435,35 @@ resource "packet_device" "test_ipxe_missing" {
   billing_cycle    = "hourly"
   project_id       = "${packet_project.test.id}"
   always_pxe       = true
+}`
+
+var testAccCheckPacketDeviceConfig_spot_instance = `
+resource "packet_project" "test" {
+  name = "TerraformTestProject-%s"
+}
+
+resource "packet_device" "test_spot_instance" {
+  hostname         = "test-spot-instance"
+  plan             = "baremetal_0"
+  facility         = "sjc1"
+  operating_system = "custom_ipxe"
+  billing_cycle    = "hourly"
+  project_id       = "${packet_project.test.id}"
+  spot_instance    = true
+  spot_price_max   = 0.34
+}`
+
+var testAccCheckPacketDeviceConfig_spot_price_max_missing = `
+resource "packet_project" "test" {
+  name = "TerraformTestProject-%s"
+}
+
+resource "packet_device" "test_spot_price_max_missing" {
+  hostname         = "test-spot-price-max-missing"
+  plan             = "baremetal_0"
+  facility         = "sjc1"
+  operating_system = "custom_ipxe"
+  billing_cycle    = "hourly"
+  project_id       = "${packet_project.test.id}"
+  spot_instance    = true
 }`
