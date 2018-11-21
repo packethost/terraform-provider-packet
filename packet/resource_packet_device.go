@@ -6,6 +6,7 @@ import (
 	"path"
 	"reflect"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/errwrap"
@@ -54,6 +55,26 @@ func resourcePacketDevice() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					fmt.Println("++++ old:", old, "new:", new, "k:", k)
+					sli := strings.Split(new, ",")
+
+					// facility param can be sepcified as a comma-separated list of facilities
+					// from which the first available is chosen. The facility where the device is
+					// deployed then goes to the `facility` param. This supresses the diff if selected
+					// facility is one of the specified.
+					if contains(sli, old) {
+						return true
+					}
+
+					// If facility is `any`, accept any change to it and suppress diff.
+					if old != "" {
+						if contains(sli, "any") {
+							return true
+						}
+					}
+					return false
+				},
 			},
 
 			"plan": &schema.Schema{
@@ -205,7 +226,7 @@ func resourcePacketDeviceCreate(d *schema.ResourceData, meta interface{}) error 
 	createRequest := &packngo.DeviceCreateRequest{
 		Hostname:             d.Get("hostname").(string),
 		Plan:                 d.Get("plan").(string),
-		Facility:             d.Get("facility").(string),
+		Facility:             strings.Split(d.Get("facility").(string), ","),
 		OS:                   d.Get("operating_system").(string),
 		BillingCycle:         d.Get("billing_cycle").(string),
 		ProjectID:            d.Get("project_id").(string),
@@ -291,7 +312,7 @@ func resourcePacketDeviceCreate(d *schema.ResourceData, meta interface{}) error 
 func resourcePacketDeviceRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*packngo.Client)
 
-	device, _, err := client.Devices.GetExtra(d.Id(), []string{"project"}, nil)
+	device, _, err := client.Devices.Get(d.Id(), &packngo.GetOptions{Includes: []string{"project"}})
 	if err != nil {
 		err = friendlyError(err)
 
@@ -458,7 +479,7 @@ func newDeviceStateRefreshFunc(d *schema.ResourceData, attribute string, meta in
 		}
 
 		if attr, ok := d.GetOk(attribute); ok {
-			device, _, err := client.Devices.Get(d.Id())
+			device, _, err := client.Devices.Get(d.Id(), &packngo.GetOptions{Includes: []string{"project"}})
 			if err != nil {
 				return nil, "", friendlyError(err)
 			}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -40,6 +41,50 @@ func TestAccPacketDevice_Basic(t *testing.T) {
 						r, "always_pxe", "false"),
 					resource.TestCheckResourceAttrSet(
 						r, "root_password"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccPacketDevice_MoreFacilities(t *testing.T) {
+	var device packngo.Device
+	rs := acctest.RandString(10)
+	r := "packet_device.test"
+
+	facs := []string{"ewr1", "sjc1"}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPacketDeviceDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: testAccCheckPacketDeviceConfig_facilities(rs, strings.Join(facs, ",")),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckPacketDeviceExists(r, &device),
+					testCheckResourceAttrInSlice(r, "facility", facs),
+				),
+			},
+		},
+	})
+}
+
+func TestAccPacketDevice_AnyFacility(t *testing.T) {
+	var device packngo.Device
+	rs := acctest.RandString(10)
+	r := "packet_device.test"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPacketDeviceDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: testAccCheckPacketDeviceConfig_facilities(rs, "any"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckPacketDeviceExists(r, &device),
+					testCheckResourceAttrInSlice(r, "facility", facilities),
 				),
 			},
 		},
@@ -196,6 +241,35 @@ func TestAccPacketDevice_IPXEConfigMissing(t *testing.T) {
 	})
 }
 
+func testCheckResourceAttrInSlice(name, key string, sli []string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		ms := s.RootModule()
+		r, ok := ms.Resources[name]
+		if !ok {
+			return fmt.Errorf("No resource %s", name)
+		}
+		is := r.Primary
+
+		if is == nil {
+			return fmt.Errorf("No primary instance: %s in %s", name, ms.Path)
+		}
+
+		if v, ok := is.Attributes[key]; !ok || !contains(sli, v) {
+			if !ok {
+				return fmt.Errorf("%s: Attribute '%s' not found", name, key)
+			}
+
+			return fmt.Errorf(
+				"%s: Attribute '%s' expected one of %#v, got %#v",
+				name,
+				key,
+				sli,
+				v)
+		}
+		return nil
+	}
+}
+
 func testAccCheckPacketDeviceDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*packngo.Client)
 
@@ -203,7 +277,7 @@ func testAccCheckPacketDeviceDestroy(s *terraform.State) error {
 		if rs.Type != "packet_device" {
 			continue
 		}
-		if _, _, err := client.Devices.Get(rs.Primary.ID); err == nil {
+		if _, _, err := client.Devices.Get(rs.Primary.ID, nil); err == nil {
 			return fmt.Errorf("Device still exists")
 		}
 	}
@@ -235,7 +309,7 @@ func testAccCheckPacketDeviceExists(n string, device *packngo.Device) resource.T
 
 		client := testAccProvider.Meta().(*packngo.Client)
 
-		foundDevice, _, err := client.Devices.Get(rs.Primary.ID)
+		foundDevice, _, err := client.Devices.Get(rs.Primary.ID, nil)
 		if err != nil {
 			return err
 		}
@@ -371,6 +445,22 @@ resource "packet_device" "test" {
   ipxe_script_url  = "http://matchbox.foo.wtf:8080/boot.ipxe"
 }
 `, projSuffix, rInt, rInt, rInt)
+}
+
+func testAccCheckPacketDeviceConfig_facilities(projSuffix, facilities string) string {
+	return fmt.Sprintf(`
+resource "packet_project" "test" {
+    name = "TerraformTestProject-%s"
+}
+
+resource "packet_device" "test" {
+  hostname         = "test-device"
+  plan             = "baremetal_0"
+  facility         = "%s"
+  operating_system = "ubuntu_16_04"
+  billing_cycle    = "hourly"
+  project_id       = "${packet_project.test.id}"
+}`, projSuffix, facilities)
 }
 
 func testAccCheckPacketDeviceConfig_basic(projSuffix string) string {
