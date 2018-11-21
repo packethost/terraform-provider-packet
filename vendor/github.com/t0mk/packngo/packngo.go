@@ -44,14 +44,14 @@ type ListOptions struct {
 	Excludes []string
 }
 
-func makeSureGetOptionsInclude(g *GetOptions, s string) *GetOptions {
-	if g == nil {
+func makeSureGetOptionsInclude(l *GetOptions, s string) *GetOptions {
+	if l == nil {
 		return &GetOptions{Includes: []string{s}}
 	}
-	if !contains(g.Includes, s) {
-		g.Includes = append(g.Includes, s)
+	if !contains(l.Includes, s) {
+		l.Includes = append(l.Includes, s)
 	}
-	return g
+	return l
 }
 
 func makeSureListOptionsInclude(l *ListOptions, s string) *ListOptions {
@@ -64,15 +64,15 @@ func makeSureListOptionsInclude(l *ListOptions, s string) *ListOptions {
 	return l
 }
 
-func createGetOptionsURL(g *GetOptions) (url string) {
-	if g == nil {
+func createGetOptionsURL(l *GetOptions) (url string) {
+	if l == nil {
 		return ""
 	}
-	if len(g.Includes) != 0 {
-		url += fmt.Sprintf("include=%s", strings.Join(g.Includes, ","))
+	if len(l.Includes) != 0 {
+		url += fmt.Sprintf("include=%s", strings.Join(l.Includes, ","))
 	}
-	if len(g.Excludes) != 0 {
-		url += fmt.Sprintf("exclude=%s", strings.Join(g.Excludes, ","))
+	if len(l.Excludes) != 0 {
+		url += fmt.Sprintf("exclude=%s", strings.Join(l.Excludes, ","))
 	}
 	return
 
