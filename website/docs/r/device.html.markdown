@@ -31,6 +31,18 @@ resource "packet_device" "web1" {
 ```
 
 ```hcl
+# Specify more facilities. The device will be deployed to first avaiable.
+resource "packet_device" "web1" {
+  hostname         = "tf.coreos2"
+  plan             = "baremetal_1"
+  facility         = "ewr1,sjc1"
+  operating_system = "coreos_stable"
+  billing_cycle    = "hourly"
+  project_id       = "${packet_project.cool_project.id}"
+}
+```
+
+```hcl
 # Same as above, but boot via iPXE initially, using the Ignition Provider for provisioning
 resource "packet_device" "pxe1" {
   hostname         = "tf.coreos2-pxe"
@@ -120,7 +132,7 @@ The following arguments are supported:
 * `hostname` - (Required) The device name
 * `project_id` - (Required) The id of the project in which to create the device
 * `operating_system` - (Required) The operating system slug. To find the slug, or visit [Operating Systems API docs](https://www.packet.net/developers/api/#operatingsystems), set your API auth token in the top of the page and see JSON from the API response.
-* `facility` - (Required) The facility in which to create the device. To find the facility code, visit [Facilities API docs](https://www.packet.net/developers/api/#facilities), set your API auth token in the top of the page and see JSON from the API response.
+* `facility` - (Required) The facility in which to create the device. It can be a single facility or a comma-separated listi, in which case the device will be deployed to first listed facility with free capacity. To find the facility codes, visit [Facilities API docs](https://www.packet.net/developers/api/#facilities), set your API auth token in the top of the page and see JSON from the API response. In addition to the listed facility codes, user can pass "any", in order to deploy to facility with most free capacity.
 * `plan` - (Required) The device plan slug. To find the plan slug, visit [Device plans API docs](https://www.packet.net/developers/api/#plans), set your auth token in the top of the page and see JSON from the API response.
 * `billing_cycle` - (Required) monthly or hourly
 * `user_data` (Optional) - A string of the desired User Data for the device.
@@ -145,7 +157,7 @@ The following attributes are exported:
 * `id` - The ID of the device
 * `hostname`- The hostname of the device
 * `project_id`- The ID of the project the device belongs to
-* `facility` - The facility the device is in
+* `facility` - The facility where the device is deployed.
 * `plan` - The hardware config of the device
 * `network` - The device's private and public IP (v4 and v6) network details
 * `access_public_ipv6` - The ipv6 maintenance IP assigned to the device
