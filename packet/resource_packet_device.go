@@ -56,7 +56,6 @@ func resourcePacketDevice() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					fmt.Println("++++ old:", old, "new:", new, "k:", k)
 					sli := strings.Split(new, ",")
 
 					// facility param can be sepcified as a comma-separated list of facilities
