@@ -59,6 +59,7 @@ func resourcePacketProject() *schema.Resource {
 			},
 			"bgp_config": &schema.Schema{
 				Type:     schema.TypeList,
+				MaxItems: 1,
 				Optional: true,
 				Computed: true,
 				ForceNew: false,
