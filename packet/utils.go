@@ -19,3 +19,11 @@ func convertStringArr(ifaceArr []interface{}) []string {
 	}
 	return arr
 }
+
+func convertInterfaceArr(a []string) []interface{} {
+	var r []interface{}
+	for _, v := range a {
+		r = append(r, v)
+	}
+	return r
+}
