@@ -1,6 +1,7 @@
 package packet
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -43,9 +44,9 @@ func dataSourceFacility() *schema.Resource {
 func filterOnPlan(slugs []string, cr *packngo.CapacityReport, plan string) []string {
 	r := []string{}
 
-	for f, planMap := range cr {
+	for f, planMap := range *cr {
 		if _, ok := planMap[plan]; ok {
-			r = r.append(f)
+			r = append(r, f)
 			continue
 		}
 	}
@@ -61,15 +62,28 @@ func findStr(a []string, x string) int {
 	return len(a)
 }
 
-func filterOnUtilization(slugs []string, cr *packngo.CapacityReport, u string) []string {
-	us := []string{"unavailable", "limited", "normal"}
-	desiredIx = findStr(us, u)
+func getQuantityCheckInput(slugs []string, plan string, q int) *packngo.CapacityInput {
+	si := make([]packngo.ServerInfo, len(slugs))
+	for i, s := range slugs {
+		si[i] = packngo.ServerInfo{Facility: s, Plan: plan, Quantity: q}
+	}
+	input := &packngo.CapacityInput{si}
+	return input
+}
 
-	for f, planMap := range cr {
-		for plan, planUtilization := rage planMap {
-			ix := findStr(us, planUtilization.Level) 
-			if ix > desiredIx {
-				r = r.append(f)
+func filterOnUtilization(slugs []string, cr *packngo.CapacityReport, plan, u string) []string {
+	r := []string{}
+	us := []string{"unavailable", "limited", "normal"}
+	desiredIx := findStr(us, u)
+
+	for f, planMap := range *cr {
+		for p, planUtilization := range planMap {
+			if p != plan {
+				continue
+			}
+			ix := findStr(us, planUtilization.Level)
+			if ix >= desiredIx {
+				r = append(r, f)
 				break
 			}
 		}
@@ -82,41 +96,53 @@ func dataSourcePacketFacilityRead(d *schema.ResourceData, meta interface{}) erro
 	if err != nil {
 		return friendlyError(err)
 	}
-	plan, planFilter := d.GetOk("plan")
-	quantity, quantityFilter := d.GetOk("plan")
-	utilization, utilizationFilter := d.GetOk("plan")
-	feature, featureFilter := d.GetOk("feature")
+	pIf, planFilter := d.GetOk("plan")
+	plan := pIf.(string)
+	qIf, quantityFilter := d.GetOk("quantity")
+	quantity := qIf.(int)
+	uIf, utilizationFilter := d.GetOk("utilization")
+	utilization := uIf.(string)
+	fIf, featureFilter := d.GetOk("feature")
+	feature := fIf.(string)
 
-	if (utilizationFilter && !planFilter) {
-		return friendlyError(
-			fmt.Errorf("If you set utilization, you also must set plan")
-		)
+	if utilizationFilter && !planFilter {
+		return friendlyError(fmt.Errorf("If you set utilization, you also must set plan"))
 	}
-	if (quantityFilter && !planFilter) {
-		return friendlyError(
-			fmt.Errorf("If you set quantity, you also must set plan")
-		)
+	if quantityFilter && !planFilter {
+		return friendlyError(fmt.Errorf("If you set quantity, you also must set plan"))
 	}
 
 	slugs := []string{}
-	for i, f := range fl {
+	for _, f := range fl {
 		if featureFilter {
 			if !contains(f.Features, feature) {
 				continue
 			}
-			slugs = append(slugs, f.Slug)
+			slugs = append(slugs, f.Code)
 		}
 	}
 
-
-	if (planFilter || quantityFilter || utilizationFilter) && (len(slugs)>0) {
-		capList, _, err := c.CapacityService.List()
+	if (quantityFilter || utilizationFilter) && (len(slugs) > 0) {
+		capList, _, err := client.CapacityService.List()
 		if err != nil {
-			t.Fatal(err)
+			return friendlyError(err)
 		}
 		slugs = filterOnPlan(slugs, capList, plan)
 		if utilizationFilter {
-			slugs = filterOnUtilization(slugs, capList, utilization)
+			slugs = filterOnUtilization(slugs, capList, plan, utilization)
+		}
+		if quantityFilter {
+			input := getQuantityCheckInput(slugs, plan, quantity)
+			caps, _, err := client.CapacityService.Check(input)
+			if err == nil {
+				return friendlyError(err)
+			}
+			slugs = []string{}
+			for _, s := range caps.Servers {
+				if s.Available {
+					slugs = append(slugs, s.Facility)
+				}
+			}
 		}
 	}
 
