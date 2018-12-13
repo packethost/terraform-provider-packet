@@ -8,8 +8,6 @@ import (
 	"github.com/packethost/packngo"
 )
 
-// As of end of 2018, faciltiy features are
-// "baremetal", "layer_2", "backend_transfer", "storage", "global_ipv4"
 func dataSourceFacility() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourcePacketFacilityRead,
@@ -19,23 +17,19 @@ func dataSourceFacility() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-			"feature": {
-				Type:     schema.TypeString,
+			"features": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				MinItems: 1,
 				Optional: true,
 			},
 			"plan": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"quantity": {
-				Type:          schema.TypeInt,
-				Optional:      true,
-				ConflictsWith: []string{"utilization"},
-			},
 			"utilization": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				ConflictsWith: []string{"quantity"},
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -62,26 +56,16 @@ func findStr(a []string, x string) int {
 	return len(a)
 }
 
-func getQuantityCheckInput(slugs []string, plan string, q int) *packngo.CapacityInput {
-	si := make([]packngo.ServerInfo, len(slugs))
-	for i, s := range slugs {
-		si[i] = packngo.ServerInfo{Facility: s, Plan: plan, Quantity: q}
-	}
-	input := &packngo.CapacityInput{si}
-	return input
-}
-
 func filterOnUtilization(slugs []string, cr *packngo.CapacityReport, plan, u string) []string {
 	r := []string{}
-	us := []string{"unavailable", "limited", "normal"}
-	desiredIx := findStr(us, u)
+	desiredIx := findStr(packngo.UtilizationLevels, u)
 
 	for f, planMap := range *cr {
 		for p, planUtilization := range planMap {
 			if p != plan {
 				continue
 			}
-			ix := findStr(us, planUtilization.Level)
+			ix := findStr(packngo.UtilizationLevels, planUtilization.Level)
 			if ix >= desiredIx {
 				r = append(r, f)
 				break
@@ -92,37 +76,56 @@ func filterOnUtilization(slugs []string, cr *packngo.CapacityReport, plan, u str
 }
 func dataSourcePacketFacilityRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*packngo.Client)
-	fl, _, err := client.Facilities.List()
-	if err != nil {
-		return friendlyError(err)
-	}
 	pIf, planFilter := d.GetOk("plan")
 	plan := pIf.(string)
-	qIf, quantityFilter := d.GetOk("quantity")
-	quantity := qIf.(int)
 	uIf, utilizationFilter := d.GetOk("utilization")
 	utilization := uIf.(string)
-	fIf, featureFilter := d.GetOk("feature")
-	feature := fIf.(string)
+
+	if planFilter && !contains(packngo.DevicePlans, plan) {
+		return fmt.Errorf("%q is not a valid Packet device plan only %+v are allowed", plan, packngo.DevicePlans)
+	}
+
+	if utilizationFilter && !contains(packngo.UtilizationLevels, utilization) {
+		return fmt.Errorf("%q is not a valid Packet utilization level, only %+v are allowed", utilization, packngo.UtilizationLevels)
+	}
+
+	fIf, featuresFilter := d.GetOk("features")
+	featureSet := fIf.(*schema.Set)
+	featureSlice := convertStringArr(featureSet.List())
+	if featuresFilter {
+		for _, f := range featureSlice {
+			if !contains(packngo.FacilityFeatures, f) {
+				return fmt.Errorf("%q is not a valid Packet facility feature, only %+v are allowed", f, packngo.FacilityFeatures)
+			}
+		}
+	}
 
 	if utilizationFilter && !planFilter {
 		return friendlyError(fmt.Errorf("If you set utilization, you also must set plan"))
 	}
-	if quantityFilter && !planFilter {
-		return friendlyError(fmt.Errorf("If you set quantity, you also must set plan"))
-	}
 
 	slugs := []string{}
-	for _, f := range fl {
-		if featureFilter {
-			if !contains(f.Features, feature) {
-				continue
-			}
-			slugs = append(slugs, f.Code)
-		}
+
+	fl, _, err := client.Facilities.List(nil)
+	if err != nil {
+		return friendlyError(err)
 	}
 
-	if (quantityFilter || utilizationFilter) && (len(slugs) > 0) {
+	for _, f := range fl {
+		if featuresFilter {
+			currentFacFeatureSet := schema.NewSet(
+				featureSet.F, convertInterfaceArr(f.Features))
+
+			diff := featureSet.Difference(currentFacFeatureSet)
+
+			if diff.Len() > 0 {
+				continue
+			}
+		}
+		slugs = append(slugs, f.Code)
+	}
+
+	if (utilizationFilter || planFilter) && (len(slugs) > 0) {
 		capList, _, err := client.CapacityService.List()
 		if err != nil {
 			return friendlyError(err)
@@ -130,19 +133,6 @@ func dataSourcePacketFacilityRead(d *schema.ResourceData, meta interface{}) erro
 		slugs = filterOnPlan(slugs, capList, plan)
 		if utilizationFilter {
 			slugs = filterOnUtilization(slugs, capList, plan, utilization)
-		}
-		if quantityFilter {
-			input := getQuantityCheckInput(slugs, plan, quantity)
-			caps, _, err := client.CapacityService.Check(input)
-			if err == nil {
-				return friendlyError(err)
-			}
-			slugs = []string{}
-			for _, s := range caps.Servers {
-				if s.Available {
-					slugs = append(slugs, s.Facility)
-				}
-			}
 		}
 	}
 
