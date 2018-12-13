@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/helper/validation"
 	"github.com/packethost/packngo"
 )
 
@@ -24,12 +25,14 @@ func dataSourceFacility() *schema.Resource {
 				Optional: true,
 			},
 			"plan": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice(packngo.DevicePlans, false),
 			},
 			"utilization": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice(packngo.UtilizationLevels, false),
 			},
 		},
 	}
@@ -80,18 +83,10 @@ func dataSourcePacketFacilityRead(d *schema.ResourceData, meta interface{}) erro
 	plan := pIf.(string)
 	uIf, utilizationFilter := d.GetOk("utilization")
 	utilization := uIf.(string)
-
-	if planFilter && !contains(packngo.DevicePlans, plan) {
-		return fmt.Errorf("%q is not a valid Packet device plan only %+v are allowed", plan, packngo.DevicePlans)
-	}
-
-	if utilizationFilter && !contains(packngo.UtilizationLevels, utilization) {
-		return fmt.Errorf("%q is not a valid Packet utilization level, only %+v are allowed", utilization, packngo.UtilizationLevels)
-	}
-
 	fIf, featuresFilter := d.GetOk("features")
 	featureSet := fIf.(*schema.Set)
 	featureSlice := convertStringArr(featureSet.List())
+
 	if featuresFilter {
 		for _, f := range featureSlice {
 			if !contains(packngo.FacilityFeatures, f) {
