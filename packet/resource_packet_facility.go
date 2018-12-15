@@ -9,10 +9,17 @@ import (
 	"github.com/packethost/packngo"
 )
 
-func dataSourceFacility() *schema.Resource {
+func resourcePacketFacility() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourcePacketFacilityRead,
+		Create: resourcePacketFacilityCreate,
+		Read:   resourcePacketFacilityRead,
+		Delete: schema.RemoveFromState,
 		Schema: map[string]*schema.Schema{
+			"keepers": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				ForceNew: true,
+			},
 			"slugs": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -21,18 +28,21 @@ func dataSourceFacility() *schema.Resource {
 			"features": {
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
+				ForceNew: true,
 				MinItems: 1,
 				Optional: true,
 			},
 			"plan": {
 				Type:         schema.TypeString,
 				Optional:     true,
+				ForceNew:     true,
 				ValidateFunc: validation.StringInSlice(packngo.DevicePlans, false),
 			},
 			"utilization": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice(packngo.UtilizationLevels, false),
+				ForceNew:     true,
 			},
 		},
 	}
@@ -77,7 +87,7 @@ func filterOnUtilization(slugs []string, cr *packngo.CapacityReport, plan, u str
 	}
 	return r
 }
-func dataSourcePacketFacilityRead(d *schema.ResourceData, meta interface{}) error {
+func resourcePacketFacilityCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*packngo.Client)
 	pIf, planFilter := d.GetOk("plan")
 	plan := pIf.(string)
@@ -133,5 +143,9 @@ func dataSourcePacketFacilityRead(d *schema.ResourceData, meta interface{}) erro
 
 	d.Set("slugs", slugs)
 	d.SetId(time.Now().UTC().String())
+	return nil
+}
+
+func resourcePacketFacilityRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }

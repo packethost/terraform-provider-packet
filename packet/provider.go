@@ -22,7 +22,6 @@ func Provider() terraform.ResourceProvider {
 			"packet_precreated_ip_block": dataSourcePacketPreCreatedIPBlock(),
 			"packet_operating_system":    dataSourceOperatingSystem(),
 			"packet_spot_market_price":   dataSourceSpotMarketPrice(),
-			"packet_facility":            dataSourceFacility(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -35,6 +34,7 @@ func Provider() terraform.ResourceProvider {
 			"packet_reserved_ip_block":   resourcePacketReservedIPBlock(),
 			"packet_ip_attachment":       resourcePacketIPAttachment(),
 			"packet_spot_market_request": resourcePacketSpotMarketRequest(),
+			"packet_facility":            resourcePacketFacility(),
 		},
 
 		ConfigureFunc: providerConfigure,

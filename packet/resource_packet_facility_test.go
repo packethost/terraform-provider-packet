@@ -17,15 +17,15 @@ func TestAccPacketFacility_Basic(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			resource.TestStep{
-				Config: `data "packet_facility" "test" {}`,
+				Config: `resource "packet_facility" "test" {}`,
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckFacility("data.packet_facility.test", totalFacs),
+					testAccCheckFacility("packet_facility.test", totalFacs),
 				),
 			},
 			resource.TestStep{
-				Config: `data "packet_facility" "test" { features = ["storage", "global_ipv4"] }`,
+				Config: `resource "packet_facility" "test2" { features = ["storage", "global_ipv4"] }`,
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckFacilityLessThan("data.packet_facility.test", totalFacs),
+					testAccCheckFacilityLessThan("packet_facility.test2", totalFacs),
 				),
 			},
 		},
@@ -35,11 +35,11 @@ func TestAccPacketFacility_Basic(t *testing.T) {
 func checkFacilitiesAndGetCount(s *terraform.State, res string) (error, int) {
 	rs, ok := s.RootModule().Resources[res]
 	if !ok {
-		return fmt.Errorf("Can't find facilities data source: %s", res), 0
+		return fmt.Errorf("Can't find facility resource: %s", res), 0
 	}
 
 	if rs.Primary.ID == "" {
-		return errors.New("facilities data source ID not set."), 0
+		return errors.New("facilities resource ID not set."), 0
 	}
 
 	countStr, ok := rs.Primary.Attributes["slugs.#"]
