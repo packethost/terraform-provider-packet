@@ -1,6 +1,9 @@
 package packet
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/packethost/packngo"
 )
@@ -11,7 +14,7 @@ func dataSourcePacketDevices() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"project_id": {
 				Type:          schema.TypeString,
-				Required:      true,
+				Optional:      true,
 				ConflictsWith: []string{"spot_market_request_id"},
 			},
 			"spot_market_request_id": {
@@ -20,24 +23,29 @@ func dataSourcePacketDevices() *schema.Resource {
 				ConflictsWith: []string{"project_id"},
 			},
 			"tags": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"names": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"facilities": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"plans": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"operating_systems": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"ids": {
 				Type:     schema.TypeList,
@@ -120,6 +128,10 @@ func dataSourcePacketDevicesRead(d *schema.ResourceData, meta interface{}) error
 	var err error
 	client := meta.(*packngo.Client)
 	smrIdRaw, spotOK := d.GetOk("spot_market_request_id")
+	pIdRaw, projOK := d.GetOk("project_id")
+	if !projOK && !spotOK {
+		return fmt.Errorf("You have to set either project_id or spot_market_request_id")
+	}
 
 	if spotOK {
 		opts := packngo.GetOptions{Includes: []string{"devices"}}
@@ -129,12 +141,13 @@ func dataSourcePacketDevicesRead(d *schema.ResourceData, meta interface{}) error
 		}
 		ds = smr.Devices
 	} else {
-		pid := d.Get("project_id").(string)
+		pid := pIdRaw.(string)
 		ds, _, err = client.Devices.List(pid, nil)
 		if err != nil {
 			return friendlyError(err)
 		}
 	}
+	log.Printf("+++++++++++++++++++++++++++++++++++ ds len %d", len(ds))
 	// tags, facilities, plans, operating_systems
 	fields := []string{"tags", "names", "facilities", "plans", "operating_systems"}
 	filters := []deviceFilter{tagFilter, nameFilter, facilityFilter, planFilter, osFilter}
@@ -144,14 +157,15 @@ func dataSourcePacketDevicesRead(d *schema.ResourceData, meta interface{}) error
 		if n > 0 {
 			newDs := []packngo.Device{}
 			values := convertStringArr(d.Get(field).([]interface{}))
-			for _, d := range ds {
-				if filters[i](values, d) {
-					newDs = append(newDs, d)
+			for _, de := range ds {
+				if filters[i](values, de) {
+					newDs = append(newDs, de)
 				}
 			}
 			ds = newDs
 		}
 	}
+	log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ds len %d", len(ds))
 
 	ids, pub4, pri4, pub6 = getComputedListsFromDeviceList(ds)
 	d.Set("ids", ids)
