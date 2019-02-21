@@ -19,3 +19,14 @@ func convertStringArr(ifaceArr []interface{}) []string {
 	}
 	return arr
 }
+
+func stringSlicesIntersect(a, b []string) bool {
+	for _, i := range a {
+		for _, j := range b {
+			if a == b {
+				return true
+			}
+		}
+	}
+	return false
+}
