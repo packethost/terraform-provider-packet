@@ -71,6 +71,7 @@ func getComputedListsFromDeviceList(devices []packngo.Device) (ids, pub4, pri4, 
 		pri4 = append(pri4, pr4)
 		pub6 = append(pub6, pu6)
 	}
+	return ids, pub4, pri4, pub6
 }
 
 func getPub4Pri4Pub6(ns []*packngo.IPAddressAssignment) (pub4, pri4, pub6 string) {
@@ -87,6 +88,7 @@ func getPub4Pri4Pub6(ns []*packngo.IPAddressAssignment) (pub4, pri4, pub6 string
 			}
 		}
 	}
+	return pub4, pri4, pub6
 
 }
 
@@ -105,7 +107,7 @@ func planFilter(f []string, d packngo.Device) bool {
 }
 
 func osFilter(f []string, d packngo.Device) bool {
-	return contains(f, d.OperatingSystem.Slug)
+	return contains(f, d.OS.Slug)
 }
 
 func nameFilter(f []string, d packngo.Device) bool {
@@ -115,8 +117,9 @@ func nameFilter(f []string, d packngo.Device) bool {
 func dataSourcePacketDevicesRead(d *schema.ResourceData, meta interface{}) error {
 	var ids, pub4, pri4, pub6 []string
 	var ds []packngo.Device
+	var err error
 	client := meta.(*packngo.Client)
-	spotOK, smrIdRaw := d.GetOk("spot_market_request_id")
+	smrIdRaw, spotOK := d.GetOk("spot_market_request_id")
 
 	if spotOK {
 		opts := packngo.GetOptions{Includes: []string{"devices"}}
@@ -127,7 +130,7 @@ func dataSourcePacketDevicesRead(d *schema.ResourceData, meta interface{}) error
 		ds = smr.Devices
 	} else {
 		pid := d.Get("project_id").(string)
-		ds, _, err := client.Devices.List(pid, nil)
+		ds, _, err = client.Devices.List(pid, nil)
 		if err != nil {
 			return friendlyError(err)
 		}
@@ -139,7 +142,7 @@ func dataSourcePacketDevicesRead(d *schema.ResourceData, meta interface{}) error
 	for i, field := range fields {
 		n := d.Get(field + ".#").(int)
 		if n > 0 {
-			newDs := []packngo.Devices{}
+			newDs := []packngo.Device{}
 			values := convertStringArr(d.Get(field).([]interface{}))
 			for _, d := range ds {
 				if filters[i](values, d) {

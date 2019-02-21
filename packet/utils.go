@@ -23,7 +23,7 @@ func convertStringArr(ifaceArr []interface{}) []string {
 func stringSlicesIntersect(a, b []string) bool {
 	for _, i := range a {
 		for _, j := range b {
-			if a == b {
+			if i == j {
 				return true
 			}
 		}
