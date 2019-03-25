@@ -6,7 +6,6 @@ import (
 	"encoding"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"reflect"
@@ -504,9 +503,5 @@ func (z *intLogger) StandardLogger(opts *StandardLoggerOptions) *log.Logger {
 		opts = &StandardLoggerOptions{}
 	}
 
-	return log.New(z.StandardWriter(opts), "", 0)
-}
-
-func (z *intLogger) StandardWriter(opts *StandardLoggerOptions) io.Writer {
-	return &stdlogAdapter{z, opts.InferLevels}
+	return log.New(&stdlogAdapter{z, opts.InferLevels}, "", 0)
 }
