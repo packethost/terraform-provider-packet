@@ -11,14 +11,16 @@ import (
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/logging"
 	"github.com/packethost/packngo"
+	"golang.org/x/sync/semaphore"
 )
 
 const (
 	consumerToken = "aZ9GmqHTPtxevvFq9SK3Pi2yr9YCbRzduCSXF2SNem5sjB91mDq7Th3ZwTtRqMWZ"
 )
 
-type Config struct {
-	AuthToken string
+type ProviderConfig struct {
+	Client          *packngo.Client
+	DeviceCreateSem *semaphore.Weighted
 }
 
 var redirectsErrorRe = regexp.MustCompile(`stopped after \d+ redirects\z`)
@@ -47,8 +49,9 @@ func PacketRetryPolicy(ctx context.Context, resp *http.Response, err error) (boo
 	return false, nil
 }
 
-// Client returns a new client for accessing Packet's API.
-func (c *Config) Client() *packngo.Client {
+func GetProviderConfig(authToken string, maxDevicesCreate int) *ProviderConfig {
+	m := ProviderConfig{}
+
 	httpClient := retryablehttp.NewClient()
 	httpClient.RetryWaitMin = time.Second
 	httpClient.RetryWaitMax = 30 * time.Second
@@ -57,6 +60,7 @@ func (c *Config) Client() *packngo.Client {
 	httpClient.HTTPClient.Transport = logging.NewTransport(
 		"Packet",
 		httpClient.HTTPClient.Transport)
-
-	return packngo.NewClientWithAuth(consumerToken, c.AuthToken, httpClient)
+	m.Client = packngo.NewClientWithAuth(consumerToken, authToken, httpClient)
+	m.DeviceCreateSem = semaphore.NewWeighted(int64(maxDevicesCreate))
+	return &m
 }

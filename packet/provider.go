@@ -19,6 +19,12 @@ func Provider() terraform.ResourceProvider {
 				DefaultFunc: schema.EnvDefaultFunc("PACKET_AUTH_TOKEN", nil),
 				Description: "The API auth key for API operations.",
 			},
+			"max_simultaneous_devices_create": {
+				Type:        schema.TypeInt,
+				Required:    false,
+				DefaultFunc: schema.EnvDefaultFunc("PACKET_MAX_SIMULTANEOUS_DEVICES_CREATE", 6),
+				Description: "Maximum number of devices to create simultaneously",
+			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"packet_ip_block_ranges":     dataSourcePacketIPBlockRanges(),
@@ -54,10 +60,9 @@ func Provider() terraform.ResourceProvider {
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	config := Config{
-		AuthToken: d.Get("auth_token").(string),
-	}
-	return config.Client(), nil
+	authToken := d.Get("auth_token").(string)
+	maxDevicesCreate := d.Get("max_simultaneous_devices_create").(int)
+	return GetProviderConfig(authToken, maxDevicesCreate), nil
 }
 
 var resourceDefaultTimeouts = &schema.ResourceTimeout{
