@@ -59,3 +59,4 @@ The following arguments are supported:
 
 * `auth_token` - (Required) This is your Packet API Auth token. This can also be specified
   with the `PACKET_AUTH_TOKEN` shell environment variable.
+* `max_simultaneous_devices_create` (Optional) This is a max number of devices that can be created simultaneously by the provider. It defaults to 6. If you lower it, you will be less likely to hit Packet API rate limit, but the `terraform apply` run will take longer. If you increase it, Terraform run will be faster, but you might get HTTP errors from Packet API rate limit.
