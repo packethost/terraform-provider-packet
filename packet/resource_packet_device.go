@@ -1,6 +1,7 @@
 package packet
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"path"
@@ -300,6 +301,7 @@ func resourcePacketDevice() *schema.Resource {
 func resourcePacketDeviceCreate(d *schema.ResourceData, meta interface{}) error {
 	providerConfig := meta.(*ProviderConfig)
 	client := providerConfig.Client
+	deviceCreateSem := providerConfig.DeviceCreateSem
 
 	var facs []string
 	f, ok := d.GetOk("facility")
@@ -403,8 +405,14 @@ func resourcePacketDeviceCreate(d *schema.ResourceData, meta interface{}) error 
 		createRequest.Storage = s
 	}
 
+	err := deviceCreateSem.Acquire(context.Background(), 1)
+	if err != nil {
+		return errwrap.Wrapf("Couldn't acquire device creation semaphore", err)
+	}
+
 	newDevice, _, err := client.Devices.Create(createRequest)
 	if err != nil {
+		deviceCreateSem.Release(1)
 		retErr := friendlyError(err)
 		if isNotFound(retErr) {
 			retErr = fmt.Errorf("%s, make sure project \"%s\" exists", retErr, createRequest.ProjectID)
@@ -416,6 +424,7 @@ func resourcePacketDeviceCreate(d *schema.ResourceData, meta interface{}) error 
 
 	// Wait for the device so we can get the networking attributes that show up after a while.
 	_, err = waitForDeviceAttribute(d, []string{"active", "failed"}, []string{"queued", "provisioning"}, "state", meta)
+	deviceCreateSem.Release(1)
 	if err != nil {
 		if isForbidden(err) {
 			// If the device doesn't get to the active state, we can't recover it from here.
