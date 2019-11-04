@@ -116,7 +116,8 @@ func resourcePacketVolume() *schema.Resource {
 }
 
 func resourcePacketVolumeCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	createRequest := &packngo.VolumeCreateRequest{
 		PlanID:     d.Get("plan").(string),
@@ -180,7 +181,8 @@ func waitForVolumeAttribute(d *schema.ResourceData, target string, pending []str
 }
 
 func newVolumeStateRefreshFunc(d *schema.ResourceData, attribute string, meta interface{}) resource.StateRefreshFunc {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	return func() (interface{}, string, error) {
 		if err := resourcePacketVolumeRead(d, meta); err != nil {
@@ -200,7 +202,8 @@ func newVolumeStateRefreshFunc(d *schema.ResourceData, attribute string, meta in
 }
 
 func resourcePacketVolumeRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	volume, _, err := client.Volumes.Get(d.Id(), &packngo.GetOptions{Includes: []string{"project", "snapshot_policies", "facility"}})
 	if err != nil {
@@ -247,7 +250,8 @@ func resourcePacketVolumeRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourcePacketVolumeUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	if d.HasChange("locked") {
 		// the change is true => false, i.e. unlock
@@ -302,7 +306,8 @@ func resourcePacketVolumeUpdate(d *schema.ResourceData, meta interface{}) error 
 }
 
 func resourcePacketVolumeDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	if _, err := client.Volumes.Delete(d.Id()); err != nil {
 		return friendlyError(err)

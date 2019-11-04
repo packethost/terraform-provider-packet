@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/packethost/packngo"
 )
 
 func dataSourceSpotMarketPrice() *schema.Resource {
@@ -28,7 +27,8 @@ func dataSourceSpotMarketPrice() *schema.Resource {
 }
 
 func dataSourcePacketSpotMarketPriceRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	facility := d.Get("facility").(string)
 	plan := d.Get("plan").(string)

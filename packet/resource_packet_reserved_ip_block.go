@@ -110,7 +110,8 @@ func resourcePacketReservedIPBlock() *schema.Resource {
 }
 
 func resourcePacketReservedIPBlockCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	quantity := d.Get("quantity").(int)
 	typ := d.Get("type").(string)
 
@@ -206,7 +207,8 @@ func loadBlock(d *schema.ResourceData, reservedBlock *packngo.IPAddressReservati
 }
 
 func resourcePacketReservedIPBlockRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	id := d.Id()
 
 	reservedBlock, _, err := client.ProjectIPs.Get(id, nil)
@@ -231,7 +233,8 @@ func resourcePacketReservedIPBlockRead(d *schema.ResourceData, meta interface{})
 }
 
 func resourcePacketReservedIPBlockDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	id := d.Id()
 

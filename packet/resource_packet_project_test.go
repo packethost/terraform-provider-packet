@@ -172,7 +172,8 @@ func TestAccPacketProject_BGPUpdate(t *testing.T) {
 }
 
 func testAccCheckPacketProjectDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "packet_project" {
@@ -196,7 +197,8 @@ func testAccCheckPacketProjectExists(n string, project *packngo.Project) resourc
 			return fmt.Errorf("No Record ID is set")
 		}
 
-		client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 		foundProject, _, err := client.Projects.Get(rs.Primary.ID, nil)
 		if err != nil {

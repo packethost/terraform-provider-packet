@@ -22,6 +22,7 @@ func Provider() terraform.ResourceProvider {
 			"max_simultaneous_devices_create": {
 				Type:        schema.TypeInt,
 				Required:    false,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("PACKET_MAX_SIMULTANEOUS_DEVICES_CREATE", 6),
 				Description: "Maximum number of devices to create simultaneously",
 			},

@@ -293,7 +293,8 @@ func TestAccPacketDevice_IPXEConfigMissing(t *testing.T) {
 }
 
 func testAccCheckPacketDeviceDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "packet_device" {
@@ -329,7 +330,8 @@ func testAccCheckPacketDeviceExists(n string, device *packngo.Device) resource.T
 			return fmt.Errorf("No Record ID is set")
 		}
 
-		client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 		foundDevice, _, err := client.Devices.Get(rs.Primary.ID, nil)
 		if err != nil {

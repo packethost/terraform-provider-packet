@@ -38,7 +38,8 @@ func dataSourceOperatingSystem() *schema.Resource {
 }
 
 func dataSourcePacketOperatingSystemRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	name, nameOK := d.GetOk("name")
 	distro, distroOK := d.GetOk("distro")

@@ -34,7 +34,8 @@ func resourcePacketVolumeAttachment() *schema.Resource {
 }
 
 func resourcePacketVolumeAttachmentCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	dID := d.Get("device_id").(string)
 	vID := d.Get("volume_id").(string)
 	log.Printf("[DEBUG] Attaching Volume (%s) to Instance (%s)\n", vID, dID)
@@ -58,7 +59,8 @@ func resourcePacketVolumeAttachmentCreate(d *schema.ResourceData, meta interface
 }
 
 func resourcePacketVolumeAttachmentRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	va, _, err := client.VolumeAttachments.Get(d.Id(), nil)
 	if err != nil {
 		err = friendlyError(err)
@@ -74,7 +76,8 @@ func resourcePacketVolumeAttachmentRead(d *schema.ResourceData, meta interface{}
 }
 
 func resourcePacketVolumeAttachmentDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	_, err := client.VolumeAttachments.Delete(d.Id())
 	if err != nil {
 		return err

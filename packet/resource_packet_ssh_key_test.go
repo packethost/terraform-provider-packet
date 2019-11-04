@@ -146,7 +146,8 @@ func TestAccPacketSSHKey_importBasic(t *testing.T) {
 }
 
 func testAccCheckPacketSSHKeyDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "packet_ssh_key" {
@@ -170,7 +171,8 @@ func testAccCheckPacketSSHKeyExists(n string, key *packngo.SSHKey) resource.Test
 			return fmt.Errorf("No Record ID is set")
 		}
 
-		client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 		foundKey, _, err := client.SSHKeys.Get(rs.Primary.ID, nil)
 		if err != nil {

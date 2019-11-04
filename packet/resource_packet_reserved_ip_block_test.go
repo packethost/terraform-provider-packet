@@ -7,7 +7,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-	"github.com/packethost/packngo"
 )
 
 func testAccCheckPacketReservedIPBlockConfig_Global(name string) string {
@@ -120,7 +119,8 @@ func TestAccPacketReservedIPBlock_importBasic(t *testing.T) {
 }
 
 func testAccCheckPacketReservedIPBlockDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "packet_reserved_ip_block" {

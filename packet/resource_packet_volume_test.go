@@ -104,7 +104,8 @@ func TestAccPacketVolume_Update(t *testing.T) {
 }
 
 func testAccCheckPacketVolumeDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "packet_volume" {
@@ -157,7 +158,8 @@ func testAccCheckPacketVolumeExists(n string, volume *packngo.Volume) resource.T
 			return fmt.Errorf("No Record ID is set")
 		}
 
-		client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 		foundVolume, _, err := client.Volumes.Get(rs.Primary.ID, nil)
 		if err != nil {

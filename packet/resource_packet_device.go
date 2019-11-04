@@ -298,7 +298,8 @@ func resourcePacketDevice() *schema.Resource {
 }
 
 func resourcePacketDeviceCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	var facs []string
 	f, ok := d.GetOk("facility")
@@ -485,7 +486,8 @@ func getNetworkInfo(ips []*packngo.IPAddressAssignment) NetworkInfo {
 }
 
 func resourcePacketDeviceRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	device, _, err := client.Devices.Get(d.Id(), &packngo.GetOptions{Includes: []string{"project"}})
 	if err != nil {
@@ -593,7 +595,8 @@ func getPorts(ps []packngo.Port) []map[string]interface{} {
 }
 
 func resourcePacketDeviceUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	if d.HasChange("locked") {
 		var action func(string) (*packngo.Response, error)
@@ -662,7 +665,8 @@ func resourcePacketDeviceUpdate(d *schema.ResourceData, meta interface{}) error 
 }
 
 func resourcePacketDeviceDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	resId, ok := d.GetOk("hardware_reservation_id")
 	if _, err := client.Devices.Delete(d.Id()); err != nil {
@@ -680,7 +684,8 @@ func resourcePacketDeviceDelete(d *schema.ResourceData, meta interface{}) error 
 }
 
 func reservationProvisionableRefresh(id string, meta interface{}) resource.StateRefreshFunc {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	return func() (interface{}, string, error) {
 		r, _, err := client.HardwareReservations.Get(id, nil)
 		if err != nil {
@@ -719,7 +724,8 @@ func waitForDeviceAttribute(d *schema.ResourceData, targets []string, pending []
 }
 
 func newDeviceStateRefreshFunc(d *schema.ResourceData, attribute string, meta interface{}) resource.StateRefreshFunc {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	return func() (interface{}, string, error) {
 		if err := resourcePacketDeviceRead(d, meta); err != nil {
@@ -740,7 +746,8 @@ func newDeviceStateRefreshFunc(d *schema.ResourceData, attribute string, meta in
 
 // powerOnAndWait Powers on the device and waits for it to be active.
 func powerOnAndWait(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	_, err := client.Devices.PowerOn(d.Id())
 	if err != nil {
 		return friendlyError(err)

@@ -74,7 +74,8 @@ func waitForConnectStatus(d *schema.ResourceData, target string, pending string,
 }
 
 func connectRefreshFunc(d *schema.ResourceData, meta interface{}) resource.StateRefreshFunc {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	return func() (interface{}, string, error) {
 		if err := resourcePacketConnectRead(d, meta); err != nil {
@@ -137,7 +138,8 @@ func resourcePacketConnectRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourcePacketConnectDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	pc, _, err := client.Connects.Deprovision(d.Id(), d.Get("project_id").(string), false)
 	if err != nil {

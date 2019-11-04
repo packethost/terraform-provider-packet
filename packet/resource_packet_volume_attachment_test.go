@@ -7,7 +7,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-	"github.com/packethost/packngo"
 )
 
 func TestAccPacketVolumeAttachment_Basic(t *testing.T) {
@@ -39,7 +38,8 @@ func TestAccPacketVolumeAttachment_Basic(t *testing.T) {
 }
 
 func testAccCheckPacketVolumeAttachmentDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "packet_volume_attachment" {

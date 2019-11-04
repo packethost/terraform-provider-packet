@@ -72,7 +72,8 @@ func TestAccPacketProjectSSHKey_Basic(t *testing.T) {
 }
 
 func testAccCheckPacketProjectSSHKeyDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "packet_project_ssh_key" {

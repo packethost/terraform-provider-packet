@@ -45,7 +45,8 @@ func resourcePacketBGPSession() *schema.Resource {
 }
 
 func resourcePacketBGPSessionCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	dID := d.Get("device_id").(string)
 	addressFamily := d.Get("address_family").(string)
 	defaultRoute := d.Get("default_route").(bool)
@@ -63,7 +64,8 @@ func resourcePacketBGPSessionCreate(d *schema.ResourceData, meta interface{}) er
 }
 
 func resourcePacketBGPSessionRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	bgpSession, _, err := client.BGPSessions.Get(d.Id(),
 		&packngo.GetOptions{Includes: []string{"device"}})
 	if err != nil {
@@ -89,7 +91,8 @@ func resourcePacketBGPSessionRead(d *schema.ResourceData, meta interface{}) erro
 }
 
 func resourcePacketBGPSessionDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	_, err := client.BGPSessions.Delete(d.Id())
 	if err != nil {
 		return err

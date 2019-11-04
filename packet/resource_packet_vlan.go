@@ -75,7 +75,8 @@ func resourcePacketVlanRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourcePacketVlanDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	_, err := client.ProjectVirtualNetworks.Delete(d.Id())
 	if err != nil {

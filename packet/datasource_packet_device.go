@@ -174,7 +174,8 @@ func dataSourcePacketDevice() *schema.Resource {
 }
 
 func dataSourcePacketDeviceRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	hostnameRaw, hostnameOK := d.GetOk("hostname")
 	projectIdRaw, projectIdOK := d.GetOk("project_id")

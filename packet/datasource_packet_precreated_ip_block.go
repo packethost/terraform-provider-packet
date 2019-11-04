@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/packethost/packngo"
 )
 
 func dataSourcePacketPreCreatedIPBlock() *schema.Resource {
@@ -48,7 +47,8 @@ func dataSourcePacketPreCreatedIPBlock() *schema.Resource {
 }
 
 func dataSourcePacketReservedIPBlockRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	projectID := d.Get("project_id").(string)
 	log.Println("[DEBUG] packet_precreated_ip_block - getting list of IPs in a project")
 	ips, _, err := client.ProjectIPs.List(projectID)

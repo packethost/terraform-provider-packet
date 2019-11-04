@@ -9,7 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-	"github.com/packethost/packngo"
 )
 
 func testAccCheckPacketPortVlanAttachmentConfig_L2Bonded(name string) string {
@@ -261,7 +260,8 @@ func TestAccPacketPortVlanAttachment_HybridMultipleVlans(t *testing.T) {
 }
 
 func testAccCheckPacketPortVlanAttachmentDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 	device_id := ""
 	vlan_id := ""

@@ -59,7 +59,8 @@ func resourcePacketOrganization() *schema.Resource {
 }
 
 func resourcePacketOrganizationCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	createRequest := &packngo.OrganizationCreateRequest{
 		Name: d.Get("name").(string),
@@ -92,7 +93,8 @@ func resourcePacketOrganizationCreate(d *schema.ResourceData, meta interface{}) 
 }
 
 func resourcePacketOrganizationRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	key, _, err := client.Organizations.Get(d.Id(), nil)
 	if err != nil {
@@ -121,7 +123,8 @@ func resourcePacketOrganizationRead(d *schema.ResourceData, meta interface{}) er
 }
 
 func resourcePacketOrganizationUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	updateRequest := &packngo.OrganizationUpdateRequest{}
 
@@ -158,7 +161,8 @@ func resourcePacketOrganizationUpdate(d *schema.ResourceData, meta interface{}) 
 }
 
 func resourcePacketOrganizationDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	_, err := client.Organizations.Delete(d.Id())
 	if err != nil {

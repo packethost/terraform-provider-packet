@@ -56,7 +56,8 @@ func resourcePacketSSHKey() *schema.Resource {
 }
 
 func resourcePacketSSHKeyCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	createRequest := &packngo.SSHKeyCreateRequest{
 		Label: d.Get("name").(string),
@@ -79,7 +80,8 @@ func resourcePacketSSHKeyCreate(d *schema.ResourceData, meta interface{}) error 
 }
 
 func resourcePacketSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	key, _, err := client.SSHKeys.Get(d.Id(), nil)
 	if err != nil {
@@ -113,7 +115,8 @@ func resourcePacketSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourcePacketSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	updateRequest := &packngo.SSHKeyUpdateRequest{}
 
@@ -136,7 +139,8 @@ func resourcePacketSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error 
 }
 
 func resourcePacketSSHKeyDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	_, err := client.SSHKeys.Delete(d.Id())
 	if err != nil {

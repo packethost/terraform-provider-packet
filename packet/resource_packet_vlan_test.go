@@ -44,7 +44,8 @@ func testAccCheckPacketVlanExists(n string, vlan *packngo.VirtualNetwork) resour
 			return fmt.Errorf("No Record ID is set")
 		}
 
-		client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 		foundVlan, _, err := client.ProjectVirtualNetworks.Get(rs.Primary.ID, nil)
 		if err != nil {
@@ -61,7 +62,8 @@ func testAccCheckPacketVlanExists(n string, vlan *packngo.VirtualNetwork) resour
 }
 
 func testAccCheckPacketVlanDestroyed(s *terraform.State) error {
-	client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "packet_vlan" {

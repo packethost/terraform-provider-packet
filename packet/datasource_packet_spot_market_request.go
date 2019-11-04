@@ -26,7 +26,8 @@ func dataSourcePacketSpotMarketRequest() *schema.Resource {
 	}
 }
 func dataSourcePacketSpotMarketRequestRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	id := d.Get("request_id").(string)
 
 	smr, _, err := client.SpotMarketRequests.Get(id, &packngo.GetOptions{Includes: []string{"project", "devices", "facilities"}})

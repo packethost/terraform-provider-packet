@@ -50,7 +50,8 @@ func TestAccOrg_importBasic(t *testing.T) {
 }
 
 func testAccCheckPacketOrgDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "packet_organization" {
@@ -74,7 +75,8 @@ func testAccCheckPacketOrgExists(n string, org *packngo.Organization) resource.T
 			return fmt.Errorf("No Record ID is set")
 		}
 
-		client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 		foundOrg, _, err := client.Organizations.Get(rs.Primary.ID, nil)
 		if err != nil {

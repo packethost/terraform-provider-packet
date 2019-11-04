@@ -102,7 +102,8 @@ func dataSourcePacketVolume() *schema.Resource {
 }
 
 func dataSourcePacketVolumeRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	nameRaw, nameOK := d.GetOk("name")
 	projectIdRaw, projectIdOK := d.GetOk("project_id")

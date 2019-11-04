@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/packethost/packngo"
 )
 
 func dataSourcePacketIPBlockRanges() *schema.Resource {
@@ -55,7 +54,8 @@ func faclityMatch(ref, ipFacility string) bool {
 }
 
 func dataSourcePacketIPBlockRangesRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	projectID := d.Get("project_id").(string)
 	ips, _, err := client.ProjectIPs.List(projectID)
 	if err != nil {

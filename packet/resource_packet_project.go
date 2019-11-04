@@ -113,7 +113,8 @@ func expandBGPConfig(d *schema.ResourceData) packngo.CreateBGPConfigRequest {
 }
 
 func resourcePacketProjectCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	createRequest := &packngo.ProjectCreateRequest{
 		Name:           d.Get("name").(string),
@@ -148,7 +149,8 @@ func resourcePacketProjectCreate(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourcePacketProjectRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	proj, _, err := client.Projects.Get(d.Id(), nil)
 	if err != nil {
@@ -218,7 +220,8 @@ func flattenBGPConfig(l *packngo.BGPConfig) []map[string]interface{} {
 }
 
 func resourcePacketProjectUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	updateRequest := &packngo.ProjectUpdateRequest{}
 	if d.HasChange("name") {
 		pName := d.Get("name").(string)
@@ -269,7 +272,8 @@ func resourcePacketProjectUpdate(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourcePacketProjectDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	_, err := client.Projects.Delete(d.Id())
 	if err != nil {

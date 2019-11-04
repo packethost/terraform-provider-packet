@@ -33,7 +33,8 @@ func TestAccPacketSpotMarketRequest_Basic(t *testing.T) {
 }
 
 func testAccCheckPacketSpotMarketRequestDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "packet_spot_market_request" {
@@ -57,7 +58,8 @@ func testAccCheckPacketSpotMarketRequestExists(n string, key *packngo.SpotMarket
 			return fmt.Errorf("No Record ID is set")
 		}
 
-		client := testAccProvider.Meta().(*packngo.Client)
+	providerConfig := testAccProvider.Meta().(*ProviderConfig)
+	client := providerConfig.Client
 
 		foundKey, _, err := client.SpotMarketRequests.Get(rs.Primary.ID, nil)
 		if err != nil {

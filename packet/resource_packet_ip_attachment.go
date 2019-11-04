@@ -34,7 +34,8 @@ func resourcePacketIPAttachment() *schema.Resource {
 }
 
 func resourcePacketIPAttachmentCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	deviceID := d.Get("device_id").(string)
 	ipa := d.Get("cidr_notation").(string)
 
@@ -51,7 +52,8 @@ func resourcePacketIPAttachmentCreate(d *schema.ResourceData, meta interface{}) 
 }
 
 func resourcePacketIPAttachmentRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	assignment, _, err := client.DeviceIPs.Get(d.Id(), nil)
 	if err != nil {
 		err = friendlyError(err)
@@ -90,7 +92,8 @@ func resourcePacketIPAttachmentRead(d *schema.ResourceData, meta interface{}) er
 }
 
 func resourcePacketIPAttachmentDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 
 	_, err := client.DeviceIPs.Unassign(d.Id())
 	if err != nil {

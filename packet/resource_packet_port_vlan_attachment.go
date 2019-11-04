@@ -58,7 +58,8 @@ func resourcePacketPortVlanAttachment() *schema.Resource {
 }
 
 func resourcePacketPortVlanAttachmentCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	deviceID := d.Get("device_id").(string)
 	pName := d.Get("port_name").(string)
 	vlanVNID := d.Get("vlan_vnid").(int)
@@ -139,7 +140,8 @@ func resourcePacketPortVlanAttachmentCreate(d *schema.ResourceData, meta interfa
 }
 
 func resourcePacketPortVlanAttachmentRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	deviceID := d.Get("device_id").(string)
 	pName := d.Get("port_name").(string)
 	vlanVNID := d.Get("vlan_vnid").(int)
@@ -183,7 +185,8 @@ func resourcePacketPortVlanAttachmentRead(d *schema.ResourceData, meta interface
 }
 
 func resourcePacketPortVlanAttachmentUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	if d.HasChange("native") {
 		native := d.Get("native").(bool)
 		portID := d.Get("port_id").(string)
@@ -205,7 +208,8 @@ func resourcePacketPortVlanAttachmentUpdate(d *schema.ResourceData, meta interfa
 }
 
 func resourcePacketPortVlanAttachmentDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	client := providerConfig.Client
 	pID := d.Get("port_id").(string)
 	vlanID := d.Get("vlan_id").(string)
 	native := d.Get("native").(bool)

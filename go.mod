@@ -11,6 +11,7 @@ require (
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/packethost/packngo v0.2.1-0.20191030123207-e34c34ef3c41
 	github.com/vmihailenco/msgpack v4.0.1+incompatible // indirect
+	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa // indirect
 )
 
