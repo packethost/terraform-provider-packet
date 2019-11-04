@@ -171,8 +171,8 @@ func testAccCheckPacketSSHKeyExists(n string, key *packngo.SSHKey) resource.Test
 			return fmt.Errorf("No Record ID is set")
 		}
 
-	providerConfig := testAccProvider.Meta().(*ProviderConfig)
-	client := providerConfig.Client
+		providerConfig := testAccProvider.Meta().(*ProviderConfig)
+		client := providerConfig.Client
 
 		foundKey, _, err := client.SSHKeys.Get(rs.Primary.ID, nil)
 		if err != nil {

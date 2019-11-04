@@ -44,8 +44,8 @@ func testAccCheckPacketVlanExists(n string, vlan *packngo.VirtualNetwork) resour
 			return fmt.Errorf("No Record ID is set")
 		}
 
-	providerConfig := testAccProvider.Meta().(*ProviderConfig)
-	client := providerConfig.Client
+		providerConfig := testAccProvider.Meta().(*ProviderConfig)
+		client := providerConfig.Client
 
 		foundVlan, _, err := client.ProjectVirtualNetworks.Get(rs.Primary.ID, nil)
 		if err != nil {

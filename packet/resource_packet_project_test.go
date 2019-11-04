@@ -197,8 +197,8 @@ func testAccCheckPacketProjectExists(n string, project *packngo.Project) resourc
 			return fmt.Errorf("No Record ID is set")
 		}
 
-	providerConfig := testAccProvider.Meta().(*ProviderConfig)
-	client := providerConfig.Client
+		providerConfig := testAccProvider.Meta().(*ProviderConfig)
+		client := providerConfig.Client
 
 		foundProject, _, err := client.Projects.Get(rs.Primary.ID, nil)
 		if err != nil {

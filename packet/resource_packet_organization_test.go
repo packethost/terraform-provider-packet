@@ -75,8 +75,8 @@ func testAccCheckPacketOrgExists(n string, org *packngo.Organization) resource.T
 			return fmt.Errorf("No Record ID is set")
 		}
 
-	providerConfig := testAccProvider.Meta().(*ProviderConfig)
-	client := providerConfig.Client
+		providerConfig := testAccProvider.Meta().(*ProviderConfig)
+		client := providerConfig.Client
 
 		foundOrg, _, err := client.Organizations.Get(rs.Primary.ID, nil)
 		if err != nil {

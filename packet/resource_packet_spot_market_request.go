@@ -289,8 +289,8 @@ func resourcePacketSpotMarketRequestDelete(d *schema.ResourceData, meta interfac
 
 func resourceStateRefreshFunc(d *schema.ResourceData, meta interface{}) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-	providerConfig := meta.(*ProviderConfig)
-	client := providerConfig.Client
+		providerConfig := meta.(*ProviderConfig)
+		client := providerConfig.Client
 		smr, _, err := client.SpotMarketRequests.Get(d.Id(), &packngo.GetOptions{Includes: []string{"project", "devices", "facilities"}})
 
 		if err != nil {

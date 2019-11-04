@@ -158,8 +158,8 @@ func testAccCheckPacketVolumeExists(n string, volume *packngo.Volume) resource.T
 			return fmt.Errorf("No Record ID is set")
 		}
 
-	providerConfig := testAccProvider.Meta().(*ProviderConfig)
-	client := providerConfig.Client
+		providerConfig := testAccProvider.Meta().(*ProviderConfig)
+		client := providerConfig.Client
 
 		foundVolume, _, err := client.Volumes.Get(rs.Primary.ID, nil)
 		if err != nil {

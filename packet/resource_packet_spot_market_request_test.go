@@ -58,8 +58,8 @@ func testAccCheckPacketSpotMarketRequestExists(n string, key *packngo.SpotMarket
 			return fmt.Errorf("No Record ID is set")
 		}
 
-	providerConfig := testAccProvider.Meta().(*ProviderConfig)
-	client := providerConfig.Client
+		providerConfig := testAccProvider.Meta().(*ProviderConfig)
+		client := providerConfig.Client
 
 		foundKey, _, err := client.SpotMarketRequests.Get(rs.Primary.ID, nil)
 		if err != nil {

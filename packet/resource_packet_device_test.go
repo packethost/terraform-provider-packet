@@ -330,8 +330,8 @@ func testAccCheckPacketDeviceExists(n string, device *packngo.Device) resource.T
 			return fmt.Errorf("No Record ID is set")
 		}
 
-	providerConfig := testAccProvider.Meta().(*ProviderConfig)
-	client := providerConfig.Client
+		providerConfig := testAccProvider.Meta().(*ProviderConfig)
+		client := providerConfig.Client
 
 		foundDevice, _, err := client.Devices.Get(rs.Primary.ID, nil)
 		if err != nil {
