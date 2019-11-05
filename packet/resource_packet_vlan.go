@@ -39,7 +39,8 @@ func resourcePacketVlan() *schema.Resource {
 }
 
 func resourcePacketVlanCreate(d *schema.ResourceData, meta interface{}) error {
-	c := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	c := providerConfig.Client
 	createRequest := &packngo.VirtualNetworkCreateRequest{
 		ProjectID:   d.Get("project_id").(string),
 		Description: d.Get("description").(string),
@@ -54,7 +55,8 @@ func resourcePacketVlanCreate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourcePacketVlanRead(d *schema.ResourceData, meta interface{}) error {
-	c := meta.(*packngo.Client)
+	providerConfig := meta.(*ProviderConfig)
+	c := providerConfig.Client
 
 	vlan, _, err := c.ProjectVirtualNetworks.Get(d.Id(),
 		&packngo.GetOptions{Includes: []string{"assigned_to"}})
@@ -76,9 +78,9 @@ func resourcePacketVlanRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourcePacketVlanDelete(d *schema.ResourceData, meta interface{}) error {
 	providerConfig := meta.(*ProviderConfig)
-	client := providerConfig.Client
+	c := providerConfig.Client
 
-	_, err := client.ProjectVirtualNetworks.Delete(d.Id())
+	_, err := c.ProjectVirtualNetworks.Delete(d.Id())
 	if err != nil {
 		return friendlyError(err)
 	}
