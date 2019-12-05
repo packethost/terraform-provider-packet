@@ -212,10 +212,6 @@ func resourcePacketReservedIPBlockRead(d *schema.ResourceData, meta interface{})
 	reservedBlock, _, err := client.ProjectIPs.Get(id, nil)
 	if err != nil {
 		err = friendlyError(err)
-		if isNotFound(err) {
-			d.SetId("")
-			return nil
-		}
 		return fmt.Errorf("Error reading IP address block with ID %s: %s", id, err)
 	}
 	err = loadBlock(d, reservedBlock)
