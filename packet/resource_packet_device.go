@@ -425,11 +425,12 @@ func resourcePacketDeviceCreate(d *schema.ResourceData, meta interface{}) error 
 	// Wait for the device so we can get the networking attributes that show up after a while.
 	state, err := waitForDeviceAttribute(d, []string{"active", "failed"}, []string{"queued", "provisioning"}, "state", meta)
 	if err != nil {
+		err = friendlyError(err)
 		if isForbidden(err) {
 			// If the device doesn't get to the active state, we can't recover it from here.
 			d.SetId("")
 
-			return errors.New("provisioning time limit exceeded; the Packet team will investigate")
+			return fmt.Errorf("Device provisioning failed. Packet team will investigate. Device ID for reference is %s", newDevice.ID)
 		}
 		return err
 	}
