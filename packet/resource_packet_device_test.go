@@ -15,8 +15,9 @@ import (
 
 func init() {
 	resource.AddTestSweepers("packet_device", &resource.Sweeper{
-		Name: "packet_device",
-		F:    testSweepDevices,
+		Name:         "packet_device",
+		F:            testSweepDevices,
+		Dependencies: []string{"packet_volume"},
 	})
 }
 
@@ -119,7 +120,7 @@ resource "packet_project" "test" {
 resource "packet_device" "test" {
   hostname         = "tfacc-test-device"
   plan             = "t1.small.x86"
-  facilities       = ["ewr1"]
+  facilities       = ["sjc1"]
   operating_system = "ubuntu_16_04"
   billing_cycle    = "hourly"
   project_id       = "${packet_project.test.id}"
@@ -195,7 +196,7 @@ locals {
 resource "packet_device" "test" {
   hostname         = "tfacc-test-device"
   plan             = "t1.small.x86"
-  facilities       = ["ewr1"]
+  facilities       = ["sjc1"]
   operating_system = "ubuntu_16_04"
   billing_cycle    = "hourly"
   project_id       = "${packet_project.test.id}"
