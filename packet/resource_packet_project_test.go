@@ -17,6 +17,15 @@ func init() {
 	})
 }
 
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
 func testSweepProjects(region string) error {
 	log.Printf("[DEBUG] Sweeping projects")
 	meta, err := sharedConfigForRegion(region)
@@ -32,6 +41,16 @@ func testSweepProjects(region string) error {
 	pids := []string{}
 	for _, p := range ps {
 		if strings.HasPrefix(p.Name, "tfacc-") {
+			pids = append(pids, p.ID)
+		}
+	}
+	idsToDump := []string{
+		"047ce685-545f-453d-8dd5-d622b49cfa82",
+		"b7d22720-f742-414b-9b7a-50afffdb1dcc",
+		"e23ff870-d0b5-45ab-a652-d190c1537613",
+	}
+	for _, p := range ps {
+		if stringInSlice(p.ID, idsToDump) {
 			pids = append(pids, p.ID)
 		}
 	}
