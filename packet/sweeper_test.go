@@ -3,14 +3,7 @@ package packet
 import (
 	"fmt"
 	"os"
-	"testing"
-
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 )
-
-func TestMain(m *testing.M) {
-	resource.TestMain(m)
-}
 
 func sharedConfigForRegion(region string) (interface{}, error) {
 
