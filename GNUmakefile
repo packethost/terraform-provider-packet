@@ -2,8 +2,15 @@ TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=packet
+PLUGIN_DIR=terraform.d/plugins/
+GOBUILD:=go build
 
 default: build
+
+dist: fmtcheck
+	mkdir -p $(PLUGIN_DIR)/linux_amd64 $(PLUGIN_DIR)/darwin_amd64
+	GOOS=darwin GOARCH=amd64 CGO_ENABLED=$(GOCGO) $(GOBUILD) -o $(PLUGIN_DIR)/darwin_amd64/terraform-provider-packetcom
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=$(GOCGO) $(GOBUILD) -o $(PLUGIN_DIR)/linux_amd64/terraform-provider-packetcom
 
 build: fmtcheck
 	go install
@@ -56,5 +63,4 @@ ifeq (,$(wildcard $(GOPATH)/src/$(WEBSITE_REPO)))
 endif
 	@$(MAKE) -C $(GOPATH)/src/$(WEBSITE_REPO) website-provider-test PROVIDER_PATH=$(shell pwd) PROVIDER_NAME=$(PKG_NAME)
 
-.PHONY: build test testacc vet fmt fmtcheck errcheck test-compile website website-test
-
+.PHONY: dist build test testacc vet fmt fmtcheck errcheck test-compile website website-test
