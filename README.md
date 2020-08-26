@@ -3,6 +3,7 @@ Terraform Provider
 
 - Website: https://www.terraform.io
 - [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fpackethost%2Fterraform-provider-packet.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fpackethost%2Fterraform-provider-packet?ref=badge_shield)
 - Mailing list: [Google Groups](http://groups.google.com/group/terraform-tool)
 
 <img src="https://cdn.rawgit.com/hashicorp/terraform-website/master/content/source/assets/images/logo-hashicorp.svg" width="600px">
@@ -80,3 +81,7 @@ Once you've built the plugin binary (see [Developing the provider](#developing-t
 ```sh
 $ terraform init -plugin-dir $GOPATH/bin
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fpackethost%2Fterraform-provider-packet.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fpackethost%2Fterraform-provider-packet?ref=badge_large)
