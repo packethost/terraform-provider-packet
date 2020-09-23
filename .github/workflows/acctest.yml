@@ -73,4 +73,4 @@ jobs:
 
         PACKET_AUTH_TOKEN: ${{ secrets.PACKET_AUTH_TOKEN }}
       run: |
-        go test -v -cover -run=TestAccPacketProject_Basic
+        go test -v -cover -run=TestAccPacketProject_Basic ./packet
