@@ -4,8 +4,12 @@ FEATURES:
 - [#249](https://github.com/packethost/terraform-provider-packet/pull/249) New datasource `packet_project_ssh_key`
 
 IMPROVEMENTS:
-- Packngo updated to [v0.3.0](https://github.com/packethost/packngo/releases/tag/v0.3.0)
+- Packngo updated to [v0.4.0](https://github.com/packethost/packngo/releases/tag/v0.3.0)
+  api.equinix.com/metal/v1 replaces api.packet.net as the API endpoint (update your network policies)
 - Test sweeper added for SSH keys
+- Acceptance testing moved to Github Actions
+- Improved logging when resources are not found and removed from state
+- Device vlan attachments and network types will be removed from state when their device is removed
 
 ## 3.0.1 (August 20, 2020)
 

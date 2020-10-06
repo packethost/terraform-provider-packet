@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.6.6
 	github.com/hashicorp/terraform-plugin-sdk v1.0.0
 	github.com/mattn/go-colorable v0.1.1 // indirect
-	github.com/packethost/packngo v0.3.0
+	github.com/packethost/packngo v0.4.0
 	github.com/vmihailenco/msgpack v4.0.1+incompatible // indirect
 	go.opencensus.io v0.22.2 // indirect
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344 // indirect
