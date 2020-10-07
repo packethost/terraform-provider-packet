@@ -224,7 +224,7 @@ func resourcePacketSpotMarketRequestRead(d *schema.ResourceData, meta interface{
 	if err != nil {
 		err = friendlyError(err)
 		if isNotFound(err) {
-			log.Print("[WARN] SpotMarketRequest (%s) not found, removing from state", d.Id())
+			log.Printf("[WARN] SpotMarketRequest (%s) not found, removing from state", d.Id())
 			d.SetId("")
 			return nil
 		}
