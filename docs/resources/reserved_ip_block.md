@@ -83,6 +83,7 @@ The following arguments are supported:
 * `type` - (Optional) Either "global_ipv4" or "public_ipv4", defaults to "public_ipv4" for backward compatibility
 * `facility` - (Optional) Facility where to allocate the public IP address block, makes sense only for type==public_ipv4, must be empty for type==global_ipv4
 * `description` - (Optional) Arbitrary description
+* `tags` - (Optiona) String list of tags
 
 ## Attributes Reference
 
@@ -99,6 +100,7 @@ The following attributes are exported:
 * `address_family` - Address family as integer (4 or 6)
 * `public` - boolean flag whether addresses from a block are public
 * `global` - boolean flag whether addresses from a block are global (i.e. can be assigned in any facility)
+* `tags` - string list of tags
 
 Idempotent reference to a first "/32" address from a reserved block might look like this:
 

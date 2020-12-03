@@ -35,6 +35,7 @@ resource "packet_reserved_ip_block" "test" {
     facility    = "ewr1"
     type        = "public_ipv4"
 	quantity    = 2
+    tags        = ["Tag1", "Tag2"]
 }`, name)
 }
 
@@ -92,6 +93,8 @@ func TestAccPacketReservedIPBlock_Public(t *testing.T) {
 						"packet_reserved_ip_block.test", "public", "true"),
 					resource.TestCheckResourceAttr(
 						"packet_reserved_ip_block.test", "management", "false"),
+					resource.TestCheckResourceAttr(
+						"packet_reserved_ip_block.test", "tags.#", "2"),
 				),
 			},
 		},
