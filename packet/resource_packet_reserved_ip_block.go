@@ -98,7 +98,7 @@ func resourcePacketReservedIPBlock() *schema.Resource {
 		Computed: true,
 	}
 	reservedBlockSchema["tags"] = &schema.Schema{
-		Type:     schema.TypeList,
+		Type:     schema.TypeSet,
 		Optional: true,
 		ForceNew: true,
 		Elem:     &schema.Schema{Type: schema.TypeString},
@@ -141,9 +141,10 @@ func resourcePacketReservedIPBlockCreate(d *schema.ResourceData, meta interface{
 
 	projectID := d.Get("project_id").(string)
 
-	tags := d.Get("tags.#").(int)
-	if tags > 0 {
-		req.Tags = convertStringArr(d.Get("tags").([]interface{}))
+	if tagsRaw, tagsOk := d.GetOk("tags"); tagsOk {
+		for _, tag := range tagsRaw.(*schema.Set).List() {
+			req.Tags = append(req.Tags, tag.(string))
+		}
 	}
 
 	blockAddr, _, err := client.ProjectIPs.Request(projectID, &req)
