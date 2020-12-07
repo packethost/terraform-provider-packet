@@ -108,10 +108,12 @@ func dataSourcePacketOperatingSystemRead(d *schema.ResourceData, meta interface{
 	if len(oss) > 1 {
 		return fmt.Errorf("There is more than one operating system that matches the search criteria")
 	}
-	d.Set("name", oss[0].Name)
-	d.Set("distro", oss[0].Distro)
-	d.Set("version", oss[0].Version)
-	d.Set("slug", oss[0].Slug)
 	d.SetId(oss[0].Slug)
-	return nil
+
+	return setMap(d, map[string]interface{}{
+		"name":    oss[0].Name,
+		"distro":  oss[0].Distro,
+		"version": oss[0].Version,
+		"slug":    oss[0].Slug,
+	})
 }

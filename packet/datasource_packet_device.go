@@ -206,44 +206,6 @@ func dataSourcePacketDeviceRead(d *schema.ResourceData, meta interface{}) error 
 		}
 	}
 
-	d.Set("hostname", device.Hostname)
-	d.Set("project_id", device.Project.ID)
-	d.Set("device_id", device.ID)
-	d.Set("plan", device.Plan.Slug)
-	d.Set("facility", device.Facility.Code)
-	d.Set("operating_system", device.OS.Slug)
-	d.Set("state", device.State)
-	d.Set("billing_cycle", device.BillingCycle)
-	d.Set("ipxe_script_url", device.IPXEScriptURL)
-	d.Set("always_pxe", device.AlwaysPXE)
-	d.Set("root_password", device.RootPassword)
-	if device.Storage != nil {
-		rawStorageBytes, err := json.Marshal(device.Storage)
-		if err != nil {
-			return fmt.Errorf("[ERR] Error getting storage JSON string for device (%s): %s", d.Id(), err)
-		}
-
-		storageString, err := structure.NormalizeJsonString(string(rawStorageBytes))
-		if err != nil {
-			return fmt.Errorf("[ERR] Error normalizing storage JSON string for device (%s): %s", d.Id(), err)
-		}
-		d.Set("storage", storageString)
-	}
-
-	if len(device.HardwareReservation.Href) > 0 {
-		d.Set("hardware_reservation_id", path.Base(device.HardwareReservation.Href))
-	}
-	networkType := device.GetNetworkType()
-
-	d.Set("network_type", networkType)
-
-	d.Set("tags", device.Tags)
-
-	keyIDs := []string{}
-	for _, k := range device.SSHKeys {
-		keyIDs = append(keyIDs, filepath.Base(k.URL))
-	}
-	d.Set("ssh_key_ids", keyIDs)
 	networkInfo := getNetworkInfo(device.Network)
 
 	sort.SliceStable(networkInfo.Networks, func(i, j int) bool {
@@ -254,16 +216,58 @@ func dataSourcePacketDeviceRead(d *schema.ResourceData, meta interface{}) error 
 		return getNetworkRank(famI, pubI) < getNetworkRank(famJ, pubJ)
 	})
 
-	d.Set("network", networkInfo.Networks)
-	d.Set("access_public_ipv4", networkInfo.PublicIPv4)
-	d.Set("access_private_ipv4", networkInfo.PrivateIPv4)
-	d.Set("access_public_ipv6", networkInfo.PublicIPv6)
-
-	ports := getPorts(device.NetworkPorts)
-	d.Set("ports", ports)
-
 	d.SetId(device.ID)
-	return nil
+
+	return setMap(d, map[string]interface{}{
+		"hostname":         device.Hostname,
+		"project_id":       device.Project.ID,
+		"device_id":        device.ID,
+		"plan":             device.Plan.Slug,
+		"facility":         device.Facility.Code,
+		"operating_system": device.OS.Slug,
+		"state":            device.State,
+		"billing_cycle":    device.BillingCycle,
+		"ipxe_script_url":  device.IPXEScriptURL,
+		"always_pxe":       device.AlwaysPXE,
+		"root_password":    device.RootPassword,
+		"storage": func(d *schema.ResourceData, k string) error {
+			if device.Storage == nil {
+				return nil
+			}
+
+			rawStorageBytes, err := json.Marshal(device.Storage)
+			if err != nil {
+				return fmt.Errorf("[ERR] Error getting storage JSON string for device (%s): %s", d.Id(), err)
+			}
+
+			storageString, err := structure.NormalizeJsonString(string(rawStorageBytes))
+			if err != nil {
+				return fmt.Errorf("[ERR] Error normalizing storage JSON string for device (%s): %s", d.Id(), err)
+			}
+
+			return d.Set(k, storageString)
+		},
+		"hardware_reservation_id": func(d *schema.ResourceData, k string) error {
+			if len(device.HardwareReservation.Href) == 0 {
+				return nil
+			}
+			return d.Set(k, path.Base(device.HardwareReservation.Href))
+		},
+		"network":             networkInfo.Networks,
+		"access_public_ipv4":  networkInfo.PublicIPv4,
+		"access_private_ipv4": networkInfo.PrivateIPv4,
+		"access_public_ipv6":  networkInfo.PublicIPv6,
+		"network_type":        device.GetNetworkType(),
+		"tags":                device.Tags,
+		"ssh_key_ids": func(d *schema.ResourceData, k string) error {
+			keyIDs := []string{}
+			for _, k := range device.SSHKeys {
+				keyIDs = append(keyIDs, filepath.Base(k.URL))
+			}
+			return d.Set(k, keyIDs)
+		},
+		"ports": getPorts(device.NetworkPorts),
+	})
 }
 
 func findDeviceByHostname(devices []packngo.Device, hostname string) (*packngo.Device, error) {

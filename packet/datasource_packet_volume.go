@@ -137,18 +137,6 @@ func dataSourcePacketVolumeRead(d *schema.ResourceData, meta interface{}) error 
 		}
 	}
 
-	d.Set("name", volume.Name)
-	d.Set("description", volume.Description)
-	d.Set("size", volume.Size)
-	d.Set("plan", volume.Plan.Slug)
-	d.Set("facility", volume.Facility.Code)
-	d.Set("state", volume.State)
-	d.Set("billing_cycle", volume.BillingCycle)
-	d.Set("locked", volume.Locked)
-	d.Set("created", volume.Created)
-	d.Set("updated", volume.Updated)
-	d.Set("project_id", volume.Project.ID)
-
 	snapshot_policies := make([]map[string]interface{}, 0, len(volume.SnapshotPolicies))
 	for _, snapshot_policy := range volume.SnapshotPolicies {
 		policy := map[string]interface{}{
@@ -157,7 +145,6 @@ func dataSourcePacketVolumeRead(d *schema.ResourceData, meta interface{}) error 
 		}
 		snapshot_policies = append(snapshot_policies, policy)
 	}
-	d.Set("snapshot_policies", snapshot_policies)
 
 	deviceIds := []string{}
 
@@ -165,10 +152,23 @@ func dataSourcePacketVolumeRead(d *schema.ResourceData, meta interface{}) error 
 		deviceIds = append(deviceIds, path.Base(a.Device.Href))
 	}
 
-	d.Set("device_ids", deviceIds)
 	d.SetId(volume.ID)
 
-	return nil
+	return setMap(d, map[string]interface{}{
+		"name":              volume.Name,
+		"description":       volume.Description,
+		"size":              volume.Size,
+		"plan":              volume.Plan.Slug,
+		"facility":          volume.Facility.Code,
+		"state":             volume.State,
+		"billing_cycle":     volume.BillingCycle,
+		"locked":            volume.Locked,
+		"created":           volume.Created,
+		"updated":           volume.Updated,
+		"project_id":        volume.Project.ID,
+		"snapshot_policies": snapshot_policies,
+		"device_ids":        deviceIds,
+	})
 }
 
 func findVolumeByName(volumes []packngo.Volume, name string) (*packngo.Volume, error) {

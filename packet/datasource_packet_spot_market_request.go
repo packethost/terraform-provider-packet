@@ -43,7 +43,6 @@ func dataSourcePacketSpotMarketRequestRead(d *schema.ResourceData, meta interfac
 	for i, d := range smr.Devices {
 		deviceIDs[i] = d.ID
 	}
-	d.Set("device_ids", deviceIDs)
 	d.SetId(id + strings.Join(deviceIDs, "-"))
-	return nil
+	return d.Set("device_ids", deviceIDs)
 }

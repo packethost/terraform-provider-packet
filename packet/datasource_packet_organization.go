@@ -106,14 +106,15 @@ func dataSourcePacketOrganizationRead(d *schema.ResourceData, meta interface{}) 
 		projectIds = append(projectIds, filepath.Base(p.URL))
 	}
 
-	d.Set("organization_id", org.ID)
-	d.Set("name", org.Name)
-	d.Set("description", org.Description)
-	d.Set("website", org.Website)
-	d.Set("twitter", org.Twitter)
-	d.Set("logo", org.Logo)
-	d.Set("project_ids", projectIds)
 	d.SetId(org.ID)
 
-	return nil
+	return setMap(d, map[string]interface{}{
+		"organization_id": org.ID,
+		"name":            org.Name,
+		"description":     org.Description,
+		"website":         org.Website,
+		"twitter":         org.Twitter,
+		"logo":            org.Logo,
+		"project_ids":     projectIds,
+	})
 }

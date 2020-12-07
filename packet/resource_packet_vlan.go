@@ -67,11 +67,13 @@ func resourcePacketVlanRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 
 	}
-	d.Set("description", vlan.Description)
-	d.Set("project_id", vlan.Project.ID)
-	d.Set("vxlan", vlan.VXLAN)
-	d.Set("facility", vlan.FacilityCode)
-	return nil
+
+	return setMap(d, map[string]interface{}{
+		"description": vlan.Description,
+		"project_id":  vlan.Project.ID,
+		"vxlan":       vlan.VXLAN,
+		"facility":    vlan.FacilityCode,
+	})
 }
 
 func resourcePacketVlanDelete(d *schema.ResourceData, meta interface{}) error {

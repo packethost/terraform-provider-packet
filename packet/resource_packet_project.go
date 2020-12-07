@@ -154,7 +154,7 @@ func resourcePacketProjectRead(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		err = friendlyError(err)
 
-		// If the project somehow already destroyed, mark as succesfully gone.
+		// If the project somehow already destroyed, mark as successfully gone.
 		if isNotFound(err) {
 			d.SetId("")
 
@@ -165,26 +165,27 @@ func resourcePacketProjectRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(proj.ID)
-	d.Set("payment_method_id", path.Base(proj.PaymentMethod.URL))
-	d.Set("name", proj.Name)
-	d.Set("organization_id", path.Base(proj.Organization.URL))
-	d.Set("created", proj.Created)
-	d.Set("updated", proj.Updated)
-	d.Set("backend_transfer", proj.BackendTransfer)
 
-	bgpConf, _, err := client.BGPConfig.Get(proj.ID, nil)
-
-	if (err == nil) && (bgpConf != nil) {
-		// guard against an empty struct
-		if bgpConf.ID != "" {
-			err := d.Set("bgp_config", flattenBGPConfig(bgpConf))
-			if err != nil {
-				err = friendlyError(err)
-				return err
+	return setMap(d, map[string]interface{}{
+		"payment_method_id": path.Base(proj.PaymentMethod.URL),
+		"name":              proj.Name,
+		"organization_id":   path.Base(proj.Organization.URL),
+		"created":           proj.Created,
+		"updated":           proj.Updated,
+		"backend_transfer":  proj.BackendTransfer,
+		"bgp_config": func(d *schema.ResourceData, k string) error {
+			// bgpconfig err is expected when not defined
+			bgpConf, _, err := client.BGPConfig.Get(proj.ID, nil)
+			if (err == nil) && (bgpConf != nil) {
+				// guard against an empty struct
+				if bgpConf.ID != "" {
+					return d.Set(k, flattenBGPConfig(bgpConf))
+				}
 			}
-		}
-	}
-	return nil
+			return nil
+		},
+	})
+
 }
 
 func flattenBGPConfig(l *packngo.BGPConfig) []map[string]interface{} {

@@ -92,8 +92,7 @@ func resourcePacketDeviceNetworkTypeRead(d *schema.ResourceData, meta interface{
 		return err
 	}
 
-	d.Set("type", devNType)
-	return nil
+	return d.Set("type", devNType)
 }
 
 func resourcePacketDeviceNetworkTypeUpdate(d *schema.ResourceData, meta interface{}) error {

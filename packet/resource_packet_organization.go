@@ -109,15 +109,16 @@ func resourcePacketOrganizationRead(d *schema.ResourceData, meta interface{}) er
 	}
 
 	d.SetId(key.ID)
-	d.Set("name", key.Name)
-	d.Set("description", key.Description)
-	d.Set("website", key.Website)
-	d.Set("twitter", key.Twitter)
-	d.Set("logo", key.Logo)
-	d.Set("created", key.Created)
-	d.Set("updated", key.Updated)
 
-	return nil
+	return setMap(d, map[string]interface{}{
+		"name":        key.Name,
+		"description": key.Description,
+		"website":     key.Website,
+		"twitter":     key.Twitter,
+		"logo":        key.Logo,
+		"created":     key.Created,
+		"updated":     key.Updated,
+	})
 }
 
 func resourcePacketOrganizationUpdate(d *schema.ResourceData, meta interface{}) error {

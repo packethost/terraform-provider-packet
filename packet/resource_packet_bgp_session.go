@@ -82,12 +82,15 @@ func resourcePacketBGPSessionRead(d *schema.ResourceData, meta interface{}) erro
 			defaultRoute = true
 		}
 	}
-	d.Set("device_id", bgpSession.Device.ID)
-	d.Set("address_family", bgpSession.AddressFamily)
-	d.Set("status", bgpSession.Status)
-	d.Set("default_route", defaultRoute)
+
 	d.SetId(bgpSession.ID)
-	return nil
+
+	return setMap(d, map[string]interface{}{
+		"device_id":      bgpSession.Device.ID,
+		"address_family": bgpSession.AddressFamily,
+		"status":         bgpSession.Status,
+		"default_route":  defaultRoute,
+	})
 }
 
 func resourcePacketBGPSessionDelete(d *schema.ResourceData, meta interface{}) error {

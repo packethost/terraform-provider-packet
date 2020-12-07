@@ -69,9 +69,10 @@ func resourcePacketVolumeAttachmentRead(d *schema.ResourceData, meta interface{}
 		}
 		return err
 	}
-	d.Set("device_id", filepath.Base(va.Device.Href))
-	d.Set("volume_id", filepath.Base(va.Volume.Href))
-	return nil
+	return setMap(d, map[string]interface{}{
+		"device_id": filepath.Base(va.Device.Href),
+		"volume_id": filepath.Base(va.Volume.Href),
+	})
 }
 
 func resourcePacketVolumeAttachmentDelete(d *schema.ResourceData, meta interface{}) error {

@@ -64,6 +64,11 @@ func dataSourcePacketIPBlockRangesRead(d *schema.ResourceData, meta interface{})
 
 	facility := d.Get("facility").(string)
 
+	if facility != "" {
+		facility = "-" + facility
+	}
+	d.SetId(projectID + facility + "-IPs")
+
 	publicIPv4s := []string{}
 	globalIPv4s := []string{}
 	privateIPv4s := []string{}
@@ -91,14 +96,10 @@ func dataSourcePacketIPBlockRangesRead(d *schema.ResourceData, meta interface{})
 		}
 	}
 
-	d.Set("public_ipv4", publicIPv4s)
-	d.Set("global_ipv4", globalIPv4s)
-	d.Set("private_ipv4", privateIPv4s)
-	d.Set("ipv6", theIPv6s)
-	if facility != "" {
-		facility = "-" + facility
-	}
-	d.SetId(projectID + facility + "-IPs")
-	return nil
-
+	return setMap(d, map[string]interface{}{
+		"public_ipv4":  publicIPv4s,
+		"global_ipv4":  globalIPv4s,
+		"private_ipv4": privateIPv4s,
+		"ipv6":         theIPv6s,
+	})
 }
