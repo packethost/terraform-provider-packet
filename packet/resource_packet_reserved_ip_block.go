@@ -246,8 +246,6 @@ func resourcePacketReservedIPBlockRead(d *schema.ResourceData, meta interface{})
 			return nil
 		},
 	})
-
-	return nil
 }
 
 func resourcePacketReservedIPBlockDelete(d *schema.ResourceData, meta interface{}) error {

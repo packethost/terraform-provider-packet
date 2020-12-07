@@ -194,32 +194,6 @@ func waitForDeviceAttribute(d *schema.ResourceData, targets []string, pending []
 	return "", err
 }
 
-// powerOnAndWait Powers on the device and waits for it to be active.
-func powerOnAndWait(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*packngo.Client)
-	_, err := client.Devices.PowerOn(d.Id())
-	if err != nil {
-		return friendlyError(err)
-	}
-
-	_, err = waitForDeviceAttribute(d, []string{"active", "failed"}, []string{"off"}, "state", client)
-	if err != nil {
-		return err
-	}
-	state := d.Get("state").(string)
-	if state != "active" {
-		return friendlyError(fmt.Errorf("Device in non-active state \"%s\"", state))
-	}
-	return nil
-}
-
-func validateFacilityForDevice(v interface{}, k string) (ws []string, errors []error) {
-	if v.(string) == "any" {
-		errors = append(errors, fmt.Errorf(`Cannot use facility: "any"`))
-	}
-	return
-}
-
 func ipAddressSchema() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{

@@ -40,11 +40,10 @@ func resourcePacketVolumeAttachmentCreate(d *schema.ResourceData, meta interface
 	log.Printf("[DEBUG] Attaching Volume (%s) to Instance (%s)\n", vID, dID)
 	va, _, err := client.VolumeAttachments.Create(vID, dID)
 	if err != nil {
-		switch err.(type) {
+		switch err := err.(type) {
 		case *packngo.ErrorResponse:
-			e := err.(*packngo.ErrorResponse)
-			if len(e.Errors) == 1 {
-				if e.Errors[0] == "Instance is already attached to this volume" {
+			if len(err.Errors) == 1 {
+				if err.Errors[0] == "Instance is already attached to this volume" {
 					log.Printf("[DEBUG] Volume (%s) is already attached to Instance (%s)", vID, dID)
 					break
 				}
