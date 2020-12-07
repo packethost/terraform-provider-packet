@@ -202,8 +202,7 @@ func loadBlock(d *schema.ResourceData, reservedBlock *packngo.IPAddressReservati
 		}
 		quantity = 1 << uint(bits)
 	}
-
-	err = setMap(d, map[string]interface{}{
+	attributeMap := map[string]interface{}{
 		"address": reservedBlock.Address,
 		"facility": func(d *schema.ResourceData, k string) error {
 			if reservedBlock.Facility == nil {
@@ -224,7 +223,15 @@ func loadBlock(d *schema.ResourceData, reservedBlock *packngo.IPAddressReservati
 		"quantity":       quantity,
 		"project_id":     path.Base(reservedBlock.Project.Href),
 		"cidr_notation":  fmt.Sprintf("%s/%d", reservedBlock.Network, reservedBlock.CIDR),
-	})
+	}
+
+	for k := range attributeMap {
+		if d.Get(k) == nil {
+			delete(attributeMap, k)
+		}
+	}
+
+	err = setMap(d, attributeMap)
 	return err
 }
 
