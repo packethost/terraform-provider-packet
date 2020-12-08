@@ -225,6 +225,7 @@ func loadBlock(d *schema.ResourceData, reservedBlock *packngo.IPAddressReservati
 		"cidr_notation":  fmt.Sprintf("%s/%d", reservedBlock.Network, reservedBlock.CIDR),
 	}
 
+	// filter out attibutes which are not defined in target resource
 	for k := range attributeMap {
 		if d.Get(k) == nil {
 			delete(attributeMap, k)
