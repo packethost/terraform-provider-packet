@@ -245,6 +245,13 @@ func resourcePacketDevice() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					// backward compatibility for < 3.2.0:
+					// removing hardware_reservation_id did not force recreation
+					// (probably because of Computed:true, removed in 3.2.0)
+					if new == "" {
+						return true
+					}
+
 					dhwr, ok := d.GetOk("deployed_hardware_reservation_id")
 
 					// ignore changes to "next-available" when the state matches
