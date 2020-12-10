@@ -1,7 +1,12 @@
+## 3.2.1 (December 10, 2020)
+
+BUG FIXES:
+- [#304](https://github.com/packethost/terraform-provider-packet/issues/304) Upon updating to 3.2.0, the breaking change would taint any devices with a stated `hardware_reservation_id = "next-available"` value and a computed UUID, before 3.2.0 this diff was ignored by the provider. The 3.1.0 diff behavior has been restored, removing the breaking change.
+
 ## 3.2.0 (December 02, 2020)
 
 BREAKING CHANGES:
-- attribute `hardware_reservation_id` of the `packet_device` resource is not intended to be read anymore. Users should read `deployed_hardware_reservation_id` to find out to which hardware reservation a device was deployed.
+- [#289](https://github.com/packethost/terraform-provider-packet/issues/289) `packet_device` attribute `hardware_reservation_id` is now for stating the intended value. The `hardware_reservation_id` of the deployed device can now be found in the computed `deployed_hardware_reservation_id` field.
 
 FEATURES:
 - [#294](https://github.com/packethost/terraform-provider-packet/pull/294) New parameters `tags` and `ipxe_script_url` for `packet_spot_market_request`
