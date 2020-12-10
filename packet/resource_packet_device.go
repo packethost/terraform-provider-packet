@@ -246,6 +246,21 @@ func resourcePacketDevice() *schema.Resource {
 				ForceNew: true,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					dhwr, ok := d.GetOk("deployed_hardware_reservation_id")
+
+					// ignore changes to "next-available" when the state matches
+					// the deployed hardware (for "< 3.2.0" compatibility)
+					if ok && new == "next-available" && dhwr == old {
+						return true
+					}
+
+					// preseve legacy behavior to avoid BC break:
+					// ignore moves from UUID -> next-available
+					if new == "next-available" && len(old) > 0 {
+						return true
+					}
+
+					// ignore changes to hardware_reservation_id when new
+					// matches the deployed hardware
 					return ok && dhwr == new
 				},
 			},
