@@ -467,27 +467,6 @@ resource "packet_device" "test" {
 `, projSuffix, rInt, rInt, rInt)
 }
 
-func testAccCheckPacketDeviceConfig_varname_pxe(rInt int, projSuffix string) string {
-	return fmt.Sprintf(`
-resource "packet_project" "test" {
-    name = "tfacc-device-%s"
-}
-
-resource "packet_device" "test" {
-  hostname         = "tfacc-test-device-%d"
-  description      = "test-desc-%d"
-  plan             = "t1.small.x86"
-  facilities       = ["sjc1"]
-  operating_system = "ubuntu_16_04"
-  billing_cycle    = "hourly"
-  project_id       = "${packet_project.test.id}"
-  tags             = ["%d"]
-  always_pxe       = true
-  ipxe_script_url  = "http://matchbox.foo.wtf:8080/boot.ipxe"
-}
-`, projSuffix, rInt, rInt, rInt)
-}
-
 func testAccCheckPacketDeviceConfig_basic(projSuffix string) string {
 	return fmt.Sprintf(`
 resource "packet_project" "test" {

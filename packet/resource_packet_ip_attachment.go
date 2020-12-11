@@ -65,28 +65,27 @@ func resourcePacketIPAttachmentRead(d *schema.ResourceData, meta interface{}) er
 		return err
 	}
 
-	d.SetId(assignment.ID)
-	d.Set("address", assignment.Address)
-	d.Set("gateway", assignment.Gateway)
-	d.Set("network", assignment.Network)
-	d.Set("netmask", assignment.Netmask)
-	d.Set("address_family", assignment.AddressFamily)
-	d.Set("cidr", assignment.CIDR)
-	d.Set("public", assignment.Public)
-	d.Set("management", assignment.Management)
-	d.Set("manageable", assignment.Manageable)
-
 	g := false
 	if assignment.Global != nil {
 		g = *(assignment.Global)
 	}
-	d.Set("global", g)
 
-	d.Set("device_id", path.Base(assignment.AssignedTo.Href))
-	d.Set("cidr_notation",
-		fmt.Sprintf("%s/%d", assignment.Network, assignment.CIDR))
+	d.SetId(assignment.ID)
 
-	return nil
+	return setMap(d, map[string]interface{}{
+		"address":        assignment.Address,
+		"gateway":        assignment.Gateway,
+		"network":        assignment.Network,
+		"netmask":        assignment.Netmask,
+		"address_family": assignment.AddressFamily,
+		"cidr":           assignment.CIDR,
+		"public":         assignment.Public,
+		"management":     assignment.Management,
+		"manageable":     assignment.Manageable,
+		"global":         g,
+		"device_id":      path.Base(assignment.AssignedTo.Href),
+		"cidr_notation":  fmt.Sprintf("%s/%d", assignment.Network, assignment.CIDR),
+	})
 }
 
 func resourcePacketIPAttachmentDelete(d *schema.ResourceData, meta interface{}) error {

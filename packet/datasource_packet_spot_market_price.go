@@ -48,7 +48,6 @@ func dataSourcePacketSpotMarketPriceRead(d *schema.ResourceData, meta interface{
 	} else {
 		return fmt.Errorf("There is no facility %s", facility)
 	}
-	d.Set("price", price)
 	d.SetId(facility)
-	return nil
+	return d.Set("price", price)
 }

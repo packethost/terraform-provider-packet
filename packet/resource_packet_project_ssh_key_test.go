@@ -2,7 +2,6 @@ package packet
 
 import (
 	"fmt"
-	"log"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
@@ -44,7 +43,6 @@ func TestAccPacketProjectSSHKey_Basic(t *testing.T) {
 		t.Fatalf("Cannot generate test SSH key pair: %s", err)
 	}
 	cfg := packetProjectSSHKeyConfig_Basic(rs, publicKeyMaterial)
-	log.Printf(cfg)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

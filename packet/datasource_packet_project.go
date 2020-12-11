@@ -2,7 +2,6 @@ package packet
 
 import (
 	"fmt"
-	"log"
 	"path"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -114,7 +113,6 @@ func dataSourcePacketProjectRead(d *schema.ResourceData, meta interface{}) error
 		}
 	} else {
 		projectId := projectIdRaw.(string)
-		log.Println(projectId)
 		var err error
 		project, _, err = client.Projects.Get(projectId, nil)
 		if err != nil {
@@ -122,33 +120,35 @@ func dataSourcePacketProjectRead(d *schema.ResourceData, meta interface{}) error
 		}
 	}
 
-	d.SetId(project.ID)
-	d.Set("payment_method_id", path.Base(project.PaymentMethod.URL))
-	d.Set("name", project.Name)
-	d.Set("project_id", project.ID)
-	d.Set("organization_id", path.Base(project.Organization.URL))
-	d.Set("created", project.Created)
-	d.Set("updated", project.Updated)
-	d.Set("backend_transfer", project.BackendTransfer)
-
-	bgpConf, _, err := client.BGPConfig.Get(project.ID, nil)
 	userIds := []string{}
 	for _, u := range project.Users {
 		userIds = append(userIds, path.Base(u.URL))
 	}
-	d.Set("user_ids", userIds)
 
-	if (err == nil) && (bgpConf != nil) {
-		// guard against an empty struct
-		if bgpConf.ID != "" {
-			err := d.Set("bgp_config", flattenBGPConfig(bgpConf))
-			if err != nil {
-				err = friendlyError(err)
-				return err
+	d.SetId(project.ID)
+
+	return setMap(d, map[string]interface{}{
+		"user_ids":          userIds,
+		"payment_method_id": path.Base(project.PaymentMethod.URL),
+		"name":              project.Name,
+		"project_id":        project.ID,
+		"organization_id":   path.Base(project.Organization.URL),
+		"created":           project.Created,
+		"updated":           project.Updated,
+		"backend_transfer":  project.BackendTransfer,
+		"bgp_config": func(d *schema.ResourceData, k string) error {
+			// bgpconfig err is expected when not defined
+			bgpConf, _, err := client.BGPConfig.Get(project.ID, nil)
+
+			if (err == nil) && (bgpConf != nil) {
+				// guard against an empty struct
+				if bgpConf.ID != "" {
+					return d.Set(k, flattenBGPConfig(bgpConf))
+				}
 			}
-		}
-	}
-	return nil
+			return nil
+		},
+	})
 }
 
 func findProjectByName(ps []packngo.Project, name string) (*packngo.Project, error) {
