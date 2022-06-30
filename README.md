@@ -1,8 +1,7 @@
 # Equinix Metal Terraform Provider
 
-[![Deprecated](https://img.shields.io/badge/Stability-Deprecated-black.svg)](deprecated-statement.md#deprecated-statements)
+[![End of Life](https://img.shields.io/badge/Stability-EndOfLife-black.svg)](end-of-life-statement.md#end-of-life-statements)
 [![GitHub release](https://img.shields.io/github/release/packethost/terraform-provider-packet/all.svg?style=flat-square)](https://github.com/packethost/terraform-provider-packet/releases)
-![](https://img.shields.io/badge/Stability-Maintained-green.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/packethost/terraform-provider-packet)](https://goreportcard.com/report/github.com/packethost/terraform-provider-packet)
 
 [![Slack](https://slack.equinixmetal.com/badge.svg)](https://slack.equinixmetal.com)
@@ -10,7 +9,9 @@
 
 <img src="https://metal.equinix.com/metal/images/logo/equinix-metal-full.svg" width="600px">
 
-### NOTE: This repository is now [Deprecated](https://github.com/equinix-labs/equinix-labs/blob/master/deprecated-statement.md) meaning that this software is only supported or maintained by Equinix Metal and its community in a case-by-case basis.
+>### This repository is [End of Life](https://github.com/equinix-labs/equinix-labs/blob/master/end-of-life-statement.md) meaning that this software is no longer supported nor maintained by Equinix Metal or its community.
+
+
 
 [Please review the Packet to Equinix provider migration guide](https://registry.terraform.io/providers/equinix/equinix/latest/docs/guides/migration_guide_packet).
 
